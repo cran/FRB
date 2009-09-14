@@ -1,5 +1,5 @@
-\name{twosampleMM}
-\alias{twosampleMM}
+\name{MMest_twosample}
+\alias{MMest_twosample}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Two Sample MM-Estimates of Location and Covariance  }
 \description{
@@ -8,7 +8,7 @@ using initial two-sample S-estimates.
 }
 
 \usage{
-twosampleMM(X, groups, control=MMcontrol(...), ...)
+MMest_twosample(X, groups, control=MMcontrol(...), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,8 +29,9 @@ twosampleMM(X, groups, control=MMcontrol(...), ...)
  %should be \code{FALSE} (the default), in which case the particular efficiency is that of the location estimates. When interest lies in the covariance or 
   %shape part, it makes sense to set \code{shapeEff=TRUE}, in which case the shape efficiency is considered instead.
       
-  The computation of the two-sample S-estimate is performed by a call to \code{\link{twosampleS}}, which uses a fast-S-type
-  algorithm. Its tuning parameters can be changed via the \code{control} argument.
+  The computation of the two-sample S-estimate is performed by a call to \code{\link{Sest_twosample}}, which uses a fast-S-type
+  algorithm. Its tuning parameters can be changed via the \code{control} argument.  The M-estimate part is computed
+  through iteratively reweighted least squares (RWLS).
   
   Apart from the MM-location estimates \code{Mu1} and \code{Mu2}, the function returns both the common MM-covariance \code{Sigma} and
   common MM-shape estimate \code{Gamma} (which has determinant equal to 1). 
@@ -49,6 +50,9 @@ A list containing:
   \item{SGamma }{S-estimate of shape}
   \item{scale }{S-estimate of scale (univariate)}
   \item{c0,b,c1}{tuning parameters of the loss functions (depend on control parameters \code{bdp} and \code{eff})}
+  \item{w}{implicit weights corresponding to the MM-estimates (i.e. final weights in the RWLS procedure)}
+  \item{outFlag}{outlier flags: 1 if the robust distance of the observation exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of \code{Y}; 0 otherwise}
 }
 \references{ 
 \itemize{
@@ -60,13 +64,13 @@ A list containing:
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{ \code{\link{twosampleS}}, \code{\link{FRBhotellingMM}},  \code{\link{MMboottwosample}}, \code{\link{MMcontrol}} }
+\seealso{ \code{\link{Sest_twosample}}, \code{\link{FRBhotellingMM}},  \code{\link{MMboot_twosample}}, \code{\link{MMcontrol}} }
 \examples{
 Y1 <- matrix(rnorm(50*5), ncol=5)
 Y2 <- matrix(rnorm(50*5), ncol=5)
 Ybig <- rbind(Y1,Y2)
 grp <- c(rep(1,50),rep(2,50))
-MMests <- twosampleMM(Ybig, grp)
+MMests <- MMest_twosample(Ybig, grp)
 
 # MM-estimate of first center:
 MMests$Mu1

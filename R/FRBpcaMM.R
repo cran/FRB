@@ -258,7 +258,7 @@ z <- list(est=MMests, bootest=bootres, shape=MMGamma, eigval=MMeigvalsGamma, eig
         eigvec.boot=booteigvecs, pvar.boot =bootpercvars, eigval.SE=sqrt(eigGvariances), eigvec.SE=sqrt(reconvec(eigvecvariances,q)),
         pvar.SE=sqrt(pvarvariances), angles=bootangles, avgangle=avgangle, eigval.CI.bca=eigGCIbca, eigvec.CI.bca=eigvecCIbca, pvar.CI.bca=pvarCIbca, 
         pvar.CIone.bca=pvarCIbcaone, eigval.CI.basic=eigGCIbasic, eigvec.CI.basic=eigvecCIbasic, pvar.CI.basic=pvarCIbasic, 
-        pvar.CIone.basic=pvarCIbasicone, failedsamples=nfailed, conf=conf, method=method)
+        pvar.CIone.basic=pvarCIbasicone, failedsamples=nfailed, conf=conf, method=method, w=MMests$w, outFlag=MMests$outFlag, Y=Y)
 
 class(z) <- "FRBpca"    
 

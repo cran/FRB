@@ -1,5 +1,5 @@
-\name{Sboottwosample}
-\alias{Sboottwosample}
+\name{Sboot_twosample}
+\alias{Sboot_twosample}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Fast and Robust Bootstrap for Two-Sample S-estimates of Location and Covariance}
 \description{
@@ -8,18 +8,18 @@ method.
 
 }
 \usage{
-Sboottwosample(X, groups, R, ests = twosampleS(X, groups))
+Sboot_twosample(X, groups, R, ests = Sest_twosample(X, groups))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{X}{ matrix or data frame }
   \item{groups}{ vector of 1's and 2's, indicating group numbers }
  \item{R}{ number of bootstrap samples }
-  \item{ests}{ original two-sample S-estimates as returned by \code{\link{twosampleS}}() }
+  \item{ests}{ original two-sample S-estimates as returned by \code{\link{Sest_twosample}}() }
 }
 \details{This function is called by \code{\link{FRBhotellingS}}, it is typically not to be used on its own. 
-It requires the result of \code{\link{twosampleS}} applied on \code{X}, supplied through the argument \code{ests}. 
-If \code{ests} is not provided, \code{\link{twosampleS}} will be called with default arguments. 
+It requires the result of \code{\link{Sest_twosample}} applied on \code{X}, supplied through the argument \code{ests}. 
+If \code{ests} is not provided, \code{\link{Sest_twosample}} will be called with default arguments. 
 
 The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators. 
 
@@ -52,14 +52,14 @@ regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{ \code{\link{FRBhotellingS}} and \code{\link{twosampleS}} }
+\seealso{ \code{\link{FRBhotellingS}} and \code{\link{Sest_twosample}} }
 \examples{
 Y1 <- matrix(rnorm(50*5), ncol=5)
 Y2 <- matrix(rnorm(50*5), ncol=5)
 Ybig <- rbind(Y1,Y2)
 grp <- c(rep(1,50),rep(2,50))
-Sests <- twosampleS(Ybig, grp, bdp=0.25)
-bootresult <- Sboottwosample(Ybig,grp,R=1000,ests=Sests)
+Sests <- Sest_twosample(Ybig, grp, bdp=0.25)
+bootresult <- Sboot_twosample(Ybig,grp,R=1000,ests=Sests)
 
 %##---- Should be DIRECTLY executable !! ----
 %##-- ==>  Define data, use random,

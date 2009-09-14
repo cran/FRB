@@ -1,5 +1,5 @@
-\name{twosampleS}
-\alias{twosampleS}
+\name{Sest_twosample}
+\alias{Sest_twosample}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Two Sample S-Estimates of Location and Covariance }
 \description{
@@ -7,7 +7,7 @@
 common covariance
 }
 \usage{
-twosampleS(X, groups, bdp = 0.5, control=Scontrol(...), ...)
+Sest_twosample(X, groups, bdp = 0.5, control=Scontrol(...), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,6 +34,9 @@ A list containing:
   \item{Gamma }{S-estimate of common shape}
   \item{scale }{S-estimate of scale (univariate)}
   \item{b,c}{tuning parameters used in Tukey biweight loss function, as determined by \code{bdp}}  
+  \item{w}{implicit weights corresponding to the S-estimates (i.e. final weights in the RWLS procedure at the end of the fast-S algorithm)}
+  \item{outFlag}{outlier flags: 1 if the robust distance of the observation exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of \code{X}; 0 otherwise}
 }
 \references{ 
 \itemize{
@@ -48,13 +51,13 @@ applications to discriminant analysis. \emph{Journal of Multivariate Analysis}, 
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{ \code{\link{twosampleMM}}, \code{\link{FRBhotellingS}},  \code{\link{Sboottwosample}}, \code{\link{Scontrol}} }
+\seealso{ \code{\link{MMest_twosample}}, \code{\link{FRBhotellingS}},  \code{\link{Sboot_twosample}}, \code{\link{Scontrol}} }
 \examples{
 Y1 <- matrix(rnorm(50*5), ncol=5)
 Y2 <- matrix(rnorm(50*5), ncol=5)
 Ybig <- rbind(Y1,Y2)
 grp <- c(rep(1,50),rep(2,50))
-Sests <- twosampleS(Ybig, grp, bdp=0.25)
+Sests <- Sest_twosample(Ybig, grp, bdp=0.25)
   
 # S-estimate of first center:
 Sests$Mu1

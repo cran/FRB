@@ -28,7 +28,8 @@ MMest_loccov(Y, control=MMcontrol(...), ...)
   it makes sense to set \code{shapeEff=TRUE}, in which case the shape efficiency is considered instead.
       
   The computation of the S-estimates is performed by a call to \code{\link{Sest_loccov}}, which uses the fast-S algorithm. 
-  See \code{\link{MMcontrol}}() to see or change the tuning parameters for this algorithm.
+  See \code{\link{MMcontrol}}() to see or change the tuning parameters for this algorithm.  The M-estimate part is computed
+  through iteratively reweighted least squares (RWLS).
   
   Apart from the MM-location estimate \code{Mu}, the function returns both the MM-covariance \code{Sigma} and MM-shape estimate \code{Gamma} (which has determinant equal to 1). 
   Additionally, the S-estimates are returned as well (their Gaussian efficiency is usually lower than the MM-estimates but they may 
@@ -44,6 +45,9 @@ A list containing:
   \item{SGamma }{S-estimate of shape}
   \item{scale }{S-estimate of scale (univariate)}
   \item{c0,b,c1}{tuning parameters of the loss functions (depend on control parameters \code{bdp} and \code{eff})}
+  \item{w}{implicit weights corresponding to the MM-estimates (i.e. final weights in the RWLS procedure)}
+  \item{outFlag}{outlier flags: 1 if the robust distance of the observation exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of \code{Y}; 0 otherwise}
 }
 \references{
 \itemize{ 

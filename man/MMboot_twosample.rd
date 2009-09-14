@@ -1,5 +1,5 @@
-\name{MMboottwosample}
-\alias{MMboottwosample}
+\name{MMboot_twosample}
+\alias{MMboot_twosample}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Fast and Robust Bootstrap for Two-Sample MM-estimates of Location and Covariance} 
 \description{
@@ -8,19 +8,19 @@ method.
 
 }
 \usage{
-MMboottwosample(X, groups, R, ests = twosampleMM(X, groups))
+MMboot_twosample(X, groups, R, ests = MMest_twosample(X, groups))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{X}{ matrix of data frame }
   \item{groups}{ vector of 1's and 2's, indicating group numbers }
   \item{R}{ number of bootstrap samples }
-  \item{ests}{ original MM-estimates as returned by \code{\link{twosampleMM}}() }
+  \item{ests}{ original MM-estimates as returned by \code{\link{MMest_twosample}}() }
 }
 \details{
  This function is called by \code{\link{FRBhotellingMM}}, it is typically not to be used on its own. 
-It requires the result of \code{\link{twosampleMM}} applied on \code{X}, supplied through the argument \code{ests}. 
-If \code{ests} is not provided, \code{\link{twosampleMM}} will be called with default arguments. 
+It requires the result of \code{\link{MMest_twosample}} applied on \code{X}, supplied through the argument \code{ests}. 
+If \code{ests} is not provided, \code{\link{MMest_twosample}} will be called with default arguments. 
 
 The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators. 
 
@@ -53,7 +53,7 @@ regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{ See Also \code{\link{FRBhotellingMM}},  \code{\link{twosampleMM}},  \code{\link{Sboottwosample}} }
+\seealso{ See Also \code{\link{FRBhotellingMM}},  \code{\link{MMest_twosample}},  \code{\link{Sboot_twosample}} }
  
 \examples{
 %##---- Should be DIRECTLY executable !! ----
@@ -63,8 +63,8 @@ Y1 <- matrix(rnorm(50*5), ncol=5)
 Y2 <- matrix(rnorm(50*5), ncol=5)
 Ybig <- rbind(Y1,Y2)
 grp <- c(rep(1,50),rep(2,50))
-MMests <- twosampleMM(Ybig, grp)
-bootresult <- MMboottwosample(Ybig, grp, R=1000, ests=MMests)
+MMests <- MMest_twosample(Ybig, grp)
+bootresult <- MMboot_twosample(Ybig, grp, R=1000, ests=MMests)
 }  
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

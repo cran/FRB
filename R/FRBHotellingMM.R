@@ -1,9 +1,9 @@
-FRBhotellingMM <-function(Xdata,Ydata=NULL,mu0=0,R=999,conf=0.95,method=c("pool","HeFung"),control=MMcontrol(...), ...)
+FRBhotellingMM <-function(Xdata,Ydata=NULL,mu0=0,R=999,conf=0.95,method=c("HeFung","pool"),control=MMcontrol(...), ...)
 {
 # performs robust Hotelling test based on multivariate MM estimates 
 # with fast and robust bootstrap
 #
-# calls: MMest_loccov(), MMboot_loccov(), twosampleMM(), MMboottwosample()
+# calls: MMest_loccov(), MMboot_loccov(), MMest_twosample(), MMboot_twosample()
 #
 # Input
 # Xdata: (n x p) data set
@@ -67,7 +67,7 @@ hottest1MM<-function(Xdata,mu0,R,conf,control=MMcontrol())
 for (r in 1:R) {
         estimates<-bmatrixSenmm[,r]
         estmubminmuhat<-estimates[1:p]
-	  estmubminmuhat<-as.matrix(estmubminmuhat)	
+        estmubminmuhat<-as.matrix(estmubminmuhat)	
         estgammabmingammahat<-estimates[(p+1):dimens]
         estgammab<-estgammabmingammahat+vecop(MMGamma)
         estgammab<-reconvec(estgammab,p)
@@ -93,7 +93,7 @@ dimnames(conf.int) <- list(c("Lower bound","Upper bound"),dimnames(Xdata)[[2]])
 rownames(MMmu) <- ("   Estimate")
 
 
-return(list(teststat=teststatMM,testvect=testvectMM,pvalue=pvalue,loc=MMmu,cov=MMSigma,confint=conf.int))
+return(list(teststat=teststatMM,testvect=testvectMM,pvalue=pvalue,loc=MMmu,cov=MMSigma,confint=conf.int,w=MMests$w,outFlag=MMests$outFlag,ROK=Rok))
 
 }
 
@@ -111,6 +111,8 @@ n <- n1*n2/(n1+n2)
 dimens<-p+p*p
 MMests1 <- MMest_loccov(Xdata1,control=control)
 MMests2 <- MMest_loccov(Xdata2,control=control)
+w <- c(MMests1$w, MMests2$w)
+outFlag <- c(MMests1$outFlag, MMests2$outFlag)
 MMmu1 <- MMests1$Mu
 MMSigma1 <- MMests1$Sigma
 MMGamma1 <- MMests1$Gamma
@@ -181,11 +183,10 @@ dimnames(conf.int) <- list(c("Lower bound","Upper bound"),dimnames(Xdata)[[2]])
 rownames(MMmu1) <- rownames(MMmu2) <- ("   Estimate")
 
 
-
-return(list(teststat=teststatMM,testvect=testvectMM,pvalue=pvalue,loc1=MMmu1,loc2=MMmu2,cov=MMSigmap,confint=conf.int))
-
+return(list(teststat=teststatMM,testvect=testvectMM,pvalue=pvalue,loc1=MMmu1,loc2=MMmu2,cov=MMSigmap,confint=conf.int,w=w,outFlag=outFlag, ROK=Rok))
 
 }
+
 #----------------------------------------------------------------------------
 
 hottest2MMHe<-function(Xdata1,Xdata2,R,conf,control=MMcontrol()){
@@ -198,7 +199,7 @@ p <- ncol(Xdata1)
 dimens <- 2*p+p*p
 Xdata <- rbind(Xdata1,Xdata2)
 groups <- c(rep(1,n1),rep(2,n2))
-estsMM <- twosampleMM(Xdata,groups,control=control)
+estsMM <- MMest_twosample(Xdata,groups,control=control)
 
 MMmu1 <- estsMM$Mu1
 Smu1 <- estsMM$SMu1
@@ -210,7 +211,7 @@ MMSigmap <- estsMM$Sigma
 
 teststatMM <-((n1*n2)/(n1+n2))*(MMmu1-MMmu2)%*%solve(MMSigmap)%*%t(MMmu1-MMmu2)
 
-bootresMM <- MMboottwosample(Xdata, groups=groups, R, ests=estsMM)
+bootresMM <- MMboot_twosample(Xdata, groups=groups, R, ests=estsMM)
 bmatrixSenmm <- bootresMM$centered
 testvectMM <- c()
 
@@ -232,7 +233,6 @@ for (r in 1:R) {
         testvectMM=c(testvectMM,testvectMMwaarde)
     }
 }
-    
 
 pvalue<-mean(testvectMM>=as.numeric(teststatMM))
 Rok<-length(testvectMM)
@@ -246,10 +246,8 @@ for (i in 1:p) {
 dimnames(conf.int) <- list(c("Lower bound","Upper bound"),dimnames(Xdata)[[2]]) 
 rownames(MMmu1) <- rownames(MMmu2) <- ("   Estimate")
 
-
-return(list(teststat=teststatMM,testvect=testvectMM,pvalue=pvalue,loc1=MMmu1,loc2=MMmu2,cov=MMSigmap,confint=conf.int))
-
-
+return(list(teststat=teststatMM,testvect=testvectMM,pvalue=pvalue,loc1=MMmu1,loc2=MMmu2,cov=MMSigmap,confint=conf.int,w=estsMM$w,outFlag=estsMM$outFlag,ROK=Rok))
+ 
 }
 
 #----------------------------------------------------------------------------
@@ -281,7 +279,7 @@ if (nrsamples==1)
    meth=paste("One sample Hotelling test based on multivariate MM-estimates (bdp = ", control$bdp,", eff = ", control$eff, ")", sep="")
    res=hottest1MM(Xdatam,mu0=mu0,R=R,conf=conf,control=control)
    z <- list(pvalue=res$pvalue,teststat=res$teststat,teststat.boot=res$testvect,Mu=res$loc,Sigma=res$cov,
-            CI=res$confint,Mu0=mu0,conf=conf,data=substitute(Xdata),meth=meth)
+            CI=res$confint,Mu0=mu0,conf=conf,data=substitute(Xdata),meth=meth,X=Xdatam,w=res$w,outFlag=res$outFlag,ROK=res$ROK)
 }
 else 
     {
@@ -296,7 +294,7 @@ else
       res=hottest2MMHe(Xdatam,Ydatam,R=R,conf=conf,control=control)  
     }
     z <- list(pvalue=res$pvalue,teststat=res$teststat,teststat.boot=res$testvect,Mu1=res$loc1,Mu2=res$loc2,Sigma=res$cov,
-            CI=res$confint,conf=conf,data=c(substitute(Xdata),substitute(Ydata)),meth=meth)
+            CI=res$confint,conf=conf,data=c(substitute(Xdata),substitute(Ydata)),meth=meth,X=Xdatam,Y=Ydatam,w=res$w,outFlag=res$outFlag,ROK=res$ROK)
 }
 
 class(z) <- "FRBhot"

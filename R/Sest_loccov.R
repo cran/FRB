@@ -300,6 +300,10 @@ for (i in bestr:1) {
     }
 }
 
+psres <- sqrt(mahalanobis(Y, superbestmu, superbestgamma))/superbestscale
+w <- scaledpsibiweight(psres,c0)
+outFlag <- (psres > sqrt(qchisq(.975, m)))
+
 # Unstandardize the results
 UstMu <- superbestmu * madY + medY
 superbestsigma <- superbestgamma * superbestscale^2
@@ -308,8 +312,6 @@ dimnames(UstSigma) <- dimnames(superbestsigma)
 UstGamma <- det(UstSigma)^(-1/m)*UstSigma
 Ustscale <- det(UstSigma)^(1/2/m)
 
-return(list( Mu = UstMu, Gamma = UstGamma, scale = Ustscale, Sigma = UstGamma*Ustscale^2, c=c0, b=b))
-
-#return(list( Mu = superbestmu, Gamma = superbestgamma, scale = superbestscale ))
+return(list( Mu = UstMu, Gamma = UstGamma, scale = Ustscale, Sigma = UstGamma*Ustscale^2, c=c0, b=b, w=w, outFlag=outFlag))
 
 }

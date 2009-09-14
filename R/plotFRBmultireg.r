@@ -1,4 +1,4 @@
-plotFRBconf <- function(x, expl, resp, confmethod = c("BCA","basic"), onepage = TRUE,...) {
+plot.FRBmultireg <- function(x, expl, resp, confmethod = c("BCA","basic"), onepage = TRUE,...) {
 
 FRBres <- x
 confmethod <- match.arg(confmethod)
@@ -87,16 +87,17 @@ if (!is.null(x$bootest)) {
                 lowerlim <- FRBres$bootest$CI.bca[vecposition,1]
                 upperlim <- FRBres$bootest$CI.bca[vecposition,2]
             }
-            if ((lowerlim * upperlim) > 0) colorhist <- "red"
-            else colorhist <- NULL
+            if ((lowerlim * upperlim) > 0) {colorhist <- "red"; star="*"}
+            else {colorhist <- NULL; ; star=""}
               
             uncentered <- FRBres$bootest$centered[vecposition,] + FRBres$bootest$vecest[vecposition]
-            hist(uncentered, xlab=paste("Beta_",rinds[i],cinds[j],sep=""), col.main=colorhist, main=paste(resp[j],"~",expl[i]))
+            hist(uncentered, xlab=paste("Beta_",rinds[i],cinds[j],sep=""), col.main=colorhist, main=paste(resp[j],"~",expl[i],star))
             abline(v=FRBres$bootest$vecest[vecposition], col="blue", lwd=2, lty=3)
             abline(v=lowerlim, col="blue", lwd=2, lty=1)
             abline(v=upperlim, col="blue", lwd=2, lty=1)
         }
     }
+    par(mfrow=(c(1,1)))
   }
   # or separate pages are used for each response variable
   else {

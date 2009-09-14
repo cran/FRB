@@ -1,7 +1,7 @@
-MMboottwosample<-function(X, groups, R, ests = twosampleMM(X,groups))
+MMboot_twosample<-function(X, groups, R, ests = MMest_twosample(X,groups))
 {
 # robust bootstrap for two sample MM location and common shape 
-# INPUT:
+# INPUT:                          
 #   X : n x p data matrix
 #   R : number of bootstrap samples
 #   ests : result of twosampleMM

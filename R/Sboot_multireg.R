@@ -88,6 +88,54 @@ for (col in 1:nc) {
 return(vecmat)
 }
 
+# --------------------------------------------------------------------
+
+pvalueCI_BCA <- function(sorted, estim, infl, conf)
+{
+    # sorted is supposed to hold sorted and centered bootstrap estimates
+    alphafunLow <- function(conf, w, a, alpha0) {
+      normquan <- qnorm(1 - (1 - conf)/2)
+      alphatildelow <- pnorm(w+(w-normquan)/(1-a*(w-normquan)))
+      return(alphatildelow-alpha0)
+    }
+    Vectorize(alphafunLow)
+
+    alphafunHigh <- function(conf, w, a, alpha0) {
+      normquan <- qnorm(1 - (1 - conf)/2)
+      alphatildehigh <- pnorm(w+(w+normquan)/(1-a*(w+normquan)))
+      return(alphatildehigh-alpha0)
+    }
+    Vectorize(alphafunHigh)
+
+    RR <- length(sorted)
+    nofless <- length(sorted[sorted<=0])
+    w <- qnorm(nofless/(RR+1))
+    a <- 1/6 * sum(infl^3) / (sum(infl^2)^(3/2))
+    alphatildelow <- alphafunLow(conf, w, a, 0)
+    alphatildehigh <- alphafunHigh(conf, w, a, 0)
+    indexlow <- max((RR+1)*alphatildelow,1)
+    indexlow <- min(indexlow,RR)
+    indexhigh <- min((RR+1)*alphatildehigh,RR)
+    indexhigh <- max(indexhigh,1)
+    CI <- sorted[round(indexlow)] + estim
+    CI[2] <- sorted[round(indexhigh)] + estim
+
+    # now find p-value as lowest (1-conf) for which CI includes zero:
+    alpha0 <- (rank(c(0,sorted+estim))[1]-1)/(RR+1)
+    if ((alpha0 == 0)||(alpha0 == RR/(RR+1))) pvalue = 0
+    else {
+        searchgrid = c(1e-7,1-1e-7)
+        if (alphafunHigh(searchgrid[1], w, a, alpha0)<0)
+            pvalue = 1-uniroot(alphafunHigh, searchgrid, w, a, alpha0)$root
+        else if (alphafunLow(searchgrid[1], w, a, alpha0)>0)
+            pvalue = 1-uniroot(alphafunLow, searchgrid, w, a, alpha0)$root
+        else {
+            pvalue = min(alpha0, 1-alpha0)*2
+            warning("BCA p-value failed; simple percentile p-value is given")
+        }
+    }
+  return(list(CI=CI, pvalue=pvalue))
+}
 #------------------------------------------------------------------------------#
 
 Y <- as.matrix(Y)
@@ -199,70 +247,92 @@ vecestim[(p*q+1):dimens] <- vecop(Sigma0)
 bootmatrix <- matrix(sample(n,R*n,replace=TRUE),ncol=R)
 
 bootbiasmat <- matrix(0,dimens,R)  
+bootsampleOK <- rep(1,R)
 
 for (r in 1:R) {
-    Yst <- Y[bootmatrix[,r],]
-    Xst <- X[bootmatrix[,r],]
-    resmatrixst <- Yst - Xst %*% Beta0
-    divecst <- sqrt(mahalanobis(resmatrixst, rep(0,q), Sigma0))
-    divecst[divecst<1e-5] <- 1e-5
-    udivecst <- rhobiweightder1(divecst,c)/divecst
-    wwdivecst <- rhobiweightder1(divecst,c)*divecst - rhobiweight(divecst,c)     
+    bootind <- bootmatrix[,r]
+    Yst <- Y[bootind,]
+    Xst <- X[bootind,]
+    resmatrixst <- resmatrix[bootind,]
+    udivecst <- udivec[bootind]
+    wwdivecst <- wwdivec[bootind]
     
     uXst <- matrix(rep(udivecst,p),ncol=p) * Xst
-    Bst <- solve(crossprod(uXst, Xst), crossprod(uXst, Yst))
-    uresst <- matrix(rep(udivecst,q),ncol=q) * resmatrixst
-    Vst_term1 <- 1/(b*n) * q * crossprod(uresst, resmatrixst)
-    Vst_term2 <- 1/(b*n)* sum(wwdivecst) * Sigma0
-    Vst <- Vst_term1 - Vst_term2
+    qrd <-  qr(crossprod(uXst, Xst))
+    if (qrd$rank<p) {
+      bootsampleOK[r] <- 0
+      next
+    }  
+    else {
+      Bst <- solve(qrd, crossprod(uXst, Yst))
+      uresst <- matrix(rep(udivecst,q),ncol=q) * resmatrixst
+      Vst_term1 <- 1/(b*n) * q * crossprod(uresst, resmatrixst)
+      Vst_term2 <- 1/(b*n)* sum(wwdivecst) * Sigma0
+      Vst <- Vst_term1 - Vst_term2
     
-    # list uncorrected bootstrap recomputations
-    vecfst <- rep(0,dimens)
-    vecfst[1:(p*q)] <- vecop(Bst)
-    vecfst[(p*q+1):dimens] <- vecop(Vst)
+      # list uncorrected bootstrap recomputations
+      vecfst <- rep(0,dimens)
+      vecfst[1:(p*q)] <- vecop(Bst)
+      vecfst[(p*q+1):dimens] <- vecop(Vst)
     
-    # compute centered, corrected fast bootstrap estimates
-    fstbias <- vecfst - vecestim
-    bootbiasmat[,r] <- lincorrectmat %*% fstbias  
+      # compute centered, corrected fast bootstrap estimates
+      fstbias <- vecfst - vecestim
+      bootbiasmat[,r] <- lincorrectmat %*% fstbias  
+    }
 }
 
 #############################################################################
 
-# compute bootstrap estimates of variance
-Svariances <- apply(bootbiasmat, 1, var)
-
-# sort bootstrap recalculations for constructing intervals
-sortedSest <- t(apply(bootbiasmat, 1, sort))
-
-# empirical inlfuences for computing a in BCa intervals, based on IF(S)
-Einf <- Seinfs_multireg(X, Y, ests=ests)
-inflE <- cbind(Einf$BetaS, Einf$covS)
-
-normquan <- qnorm(1 - (1 - conf)/2)
-estCIbca <- matrix(0,dimens,2)
-estCIbasic <- matrix(0,dimens,2)
-for (i in 1:(dimens)) {
-  nofless <- length(sortedSest[i,sortedSest[i,]<=0])
-  w <- qnorm(nofless/(R+1))
-  a <- 1/6 * sum(inflE[,i]^3) / (sum(inflE[,i]^2)^(3/2))
-  alphatildelow <- pnorm(w+(w-normquan)/(1-a*(w-normquan)))
-  alphatildehigh <- pnorm(w+(w+normquan)/(1-a*(w+normquan)))
-  indexlow <- max((R+1)*alphatildelow,1)
-  indexlow <- min(indexlow,R)
-  indexhigh <- min((R+1)*alphatildehigh,R)
-  indexhigh <- max(indexhigh,1)
-  estCIbca[i,1] <- sortedSest[i,round(indexlow)] + vecestim[i]
-  estCIbca[i,2] <- sortedSest[i,round(indexhigh)] + vecestim[i]
+bootindicesOK <- (1:R)[bootsampleOK==1]
+ROK <- length(bootindicesOK)
+nfailed <- R - ROK
+if (nfailed > 0)
+  warning(paste(nfailed, " out of ", R, " bootstrap samples were discarded because of too few distinct observation with positive weight"))
+if (ROK>1) { 
+  bootbiasmat = bootbiasmat[,bootindicesOK]
+  
+  # compute bootstrap estimates of standard error
+  SSEs <- sqrt(apply(bootbiasmat, 1, var))
+  
+  # sort bootstrap recalculations for constructing intervals
+  sortedSest <- t(apply(bootbiasmat, 1, sort))
+  
+  # empirical inlfuences for computing a in BCa intervals, based on IF(S)
+  Einf <- Seinfs_multireg(X, Y, ests=ests)
+  inflE <- cbind(Einf$BetaS, Einf$covS)
+  
+  estCIbca <- matrix(0,dimens,2)
+  estCIbasic <- matrix(0,dimens,2)
+  pvaluebca <- rep(0,dimens)
+  pvaluebasic <- rep(0,dimens)
+  for (i in 1:(dimens)) {
+    bcares <- pvalueCI_BCA(sortedSest[i,], vecestim[i], inflE[,i], conf)
+    estCIbca[i,] <- bcares$CI
+    pvaluebca[i] <- bcares$pvalue
+  }
+  
+  indexlow <- floor((1 - (1 - conf)/2) * ROK)
+  indexhigh <- ceiling((1 - conf)/2 * ROK)
+  estCIbasic[,1] <- vecestim - sortedSest[,indexlow]
+  estCIbasic[,2] <- vecestim - sortedSest[,indexhigh]
+  for (i in 1:(dimens)) {
+    alpha.twicebeta <- (rank(c(2*vecestim[i],sortedSest[i,]+vecestim[i]))[1]-1)/ROK
+    pvaluebasic[i] <- min(alpha.twicebeta, 1-alpha.twicebeta)*2
+  }
 }
-
-indexlow <- floor((1 - (1 - conf)/2) * R)
-indexhigh <- ceiling((1 - conf)/2 * R)
-estCIbasic[,1] <- vecestim - sortedSest[,indexlow]
-estCIbasic[,2] <- vecestim - sortedSest[,indexhigh]
-
+else
+{
+  warning("Too many bootstrap samples discarded; FRB is cancelled")
+  bootbiasmat <- NULL
+  SSEs <- NULL
+  estCIbca <- NULL
+  estCIbasic <- NULL
+  pvaluebca <- NULL
+  pvaluebasic <- NULL
+  }
 #############################################################################
 
-return(list(centered=bootbiasmat, vecest=vecestim, SE=sqrt(Svariances), CI.bca=estCIbca, CI.basic=estCIbasic))
+return(list(centered=bootbiasmat, vecest=vecestim, SE=SSEs, CI.bca=estCIbca, p.bca=pvaluebca, p.basic=pvaluebasic, CI.basic=estCIbasic, ROK=ROK))
 
 }
 

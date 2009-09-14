@@ -9,7 +9,7 @@
 Plot functions for \code{FRBpca} objects: plots PC variances, PC angles and PC loadings, with bootstrap inference 
 }
 \usage{
-\method{plot}{FRBpca}(x, which = 1:3, pcs.loadings = 1:min(5, length(x$eigval)),...)
+\method{plot}{FRBpca}(x, which = 1:3, pcs.loadings = 1:min(5, length(x$eigval)), confmethod = c("BCA","basic"), ...)
 
 
 plotFRBvars(x, cumul = 2, confmethod = c("BCA","basic"), 
@@ -21,12 +21,12 @@ plotFRBloadings(x, confmethod = c("BCA","basic"),
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{ an \R object of class \code{FRBpca}, typically created by \code{\link{FRBpcaS}} or \code{\link{FRBpcaMM}} }
-  \item{which}{ integer number(s) between 1 and 3 to specify which plot is desired  }
+  \item{which}{ integer number(s) between 1 and 3 to specify which plot is desired (1 = variances; 2 = angles; 3 = loadings)}
   \item{pcs.loadings}{ integer number(s) indicating for which of the PCs the loadings should be shown (in case the 
-    \code{which} argument contains 3)}
+    \code{which} argument contains 2)}
   \item{cumul}{ integer between 0 and 2: 0 = screeplot, i.e. the variances of the PCs are shown; 1 = the cumulative variances (percentage) of the
       PCs are shown; 2 = (default) both plots are shown on the same page}
-  \item{confmethod}{ for \code{plotFRBvars} and \code{plotFRBloadings}: which kind of bootstrap confidence intervals to be displayed: 
+  \item{confmethod}{ which kind of bootstrap confidence intervals to be displayed: 
 'BCA'= bias corrected and accelerated method, 'basic'= basic bootstrap method}
   \item{npcs}{ number of PCs to be included in screeplot/cumulative variances plot }
   \item{pcs}{ PCs to consider in plot; defaults to first 12 (maximally) for \code{plotFRBangles}; defaults to first 5 for
@@ -35,10 +35,24 @@ plotFRBloadings(x, confmethod = c("BCA","basic"),
   \item{...}{ potentially more arguments } 
 }
 \details{
-The generic \code{plot} function calls \code{plotFRBvars}, \code{plotFRBangles} and \code{plotFRBloadings}, according to which
+The generic \code{plot} function calls \code{plotFRBvars}, \code{plotFRBangles} and 
+ \code{plotFRBloadings}, according to which
 of these are respectively specified in argument \code{which}, and 
 displays the plots on separate pages (the user is prompted for each new page).  The PCs for which the loadings should be plotted 
 can be specified through the \code{pcs.loadings} argument. The other arguments are set to their default values by \code{plot}.
+
+%Mainly for the purpose of outlier detection, \code{plotDiagPCA} shows the robust distances (i.e. mahalanobis distances based on the robust estimates of location and covariance).
+%If \code{EIF=FALSE}, the distances are simply plotted against the index of the observations. 
+%If \code{EIF=TRUE}, the diagnostic plot from Pison and Van Aelst (2002) is displayed.
+%It plots the robust distance versus a measure of the overall empirical influence of the observation on the
+%principal components. The empirical influences are obtained by using the influence function of
+%the eigenvectors of the classical shape estimator at the normal model, and by
+%substituting therein the robust estimates for the population parameters.
+%The overall influence value is then defined by averaging the squared influence
+%over all coefficients in the eigenvectors. 
+%The vertical line on the plot is an indicative cutoff value, obtained through simulation. This last part takes 
+%a few moments of computation time, which is the reason why the default in \code{plot} is \code{EIF=FALSE}.
+%The default is reversed, however, when explicitly using the \code{plotDiagPCA} function. 
 
 The solid curves displayed by \code{plotFRBvars} indicate the actual estimates of the variances (or percentages), while the dashed curves represent the confidence
 limits as computed by \code{\link{FRBpcaS}} or \code{\link{FRBpcaMM}}.
@@ -56,6 +70,13 @@ are shown, where the variables were ordered according to the absolute value of t
 variables for that particular PC are shown).
  
 }
+%\references{ 
+%\itemize{
+%\item G. Pison and S. Van Aelst (2002). Analyzing robust multivariate methods
+%with a diagnostic plot.  In \emph{Proceedings in Computational Statistics 2002 (W.
+%Hardle and B. Ronz, eds.)}, 165-170.
+%}
+%}
 \author{ Gert Willems and Ella Roelant }
 \seealso{ \code{\link{FRBpcaS}}, \code{\link{FRBpcaMM}},  \code{\link{summary.FRBpca}} }
 \examples{

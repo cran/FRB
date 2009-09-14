@@ -34,6 +34,9 @@ Sest_multireg(X, Y, bdp = 0.5, control=Scontrol(...), ...)
   \item{Sigma}{S-estimate of the error covariance matrix}
   \item{scale}{S-estimate of the error scale (univariate)}
   \item{b,c}{tuning parameters used in Tukey biweight loss function, as determined by \code{bdp}}
+  \item{w}{implicit weights corresponding to the S-estimates (i.e. final weights in the RWLS procedure at the end of the fast-S algorithm)}
+  \item{outFlag}{outlier flags: 1 if the robust distance of the residual exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of the responses; 0 otherwise}
 }
 \references{ 
 \itemize{
@@ -58,6 +61,17 @@ school.y <- data.matrix(schooldata[,6:8])
 Sres <- Sest_multireg(school.x,school.y, bdp=0.25)
 # the regression coefficients:
 Sres$Beta
+
+n <- nrow(school.x)
+par(mfrow=c(2,1))
+# the estimates can be considered as weighted least squares estimates with the 
+# following implicit weights
+plot(1:n, Sres$w)
+# Sres$outFlag tells which points are outliers based on whether or not their 
+# robust distance exceeds the .975 chi-square cut-off:
+plot(1:n, Sres$outFlag)
+# (see also the diagnostic plot in plotDiag())
+
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

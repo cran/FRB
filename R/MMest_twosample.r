@@ -1,4 +1,4 @@
-twosampleMM<-function(X, groups, control=MMcontrol(...), ...)
+MMest_twosample<-function(X, groups, control=MMcontrol(...), ...)
 {
 # M-step for two-sample location and common scatter with auxiliary S-scale
 # INPUT:
@@ -130,7 +130,7 @@ mtol <- control$convTol.MM
 c <- csolve.bw.MM(p, eff, shape=shapeEff)
 
 # first compute 50% breakdown S-estimator
-Sresult <- twosampleS(X, groups, bdp, fastScontrols)
+Sresult <- Sest_twosample(X, groups, bdp, fastScontrols)
 
 c0 <- Sresult$c
 b <- Sresult$b
@@ -184,6 +184,12 @@ else # isn't supposed to happen
    rescovariance <- Sresult$cov
    }
 
-return(list(Mu1=resloc1,Mu2=resloc2,Gamma=resshape,Sigma=rescovariance,SMu1=Sresult$Mu1,SMu2=Sresult$Mu2,SGamma=Sresult$Gamma,scale=auxscale,SSigma=Sresult$Sigma,c0=c0,b=b,c1=c))
+R1 <- X1 - matrix(rep(resloc1,n1), n1, byrow=TRUE)
+R2 <- X2 - matrix(rep(resloc2,n2), n2, byrow=TRUE)
+psres <- sqrt(mahalanobis(rbind(R1,R2),rep(0,p),rescovariance))
+w <- scaledpsibiweight(psres,c)
+outFlag <- (psres > sqrt(qchisq(.975, p)))
+
+return(list(Mu1=resloc1,Mu2=resloc2,Gamma=resshape,Sigma=rescovariance,SMu1=Sresult$Mu1,SMu2=Sresult$Mu2,SGamma=Sresult$Gamma,scale=auxscale,SSigma=Sresult$Sigma,c0=c0,b=b,c1=c,w=w,outFlag=outFlag))
 }
 

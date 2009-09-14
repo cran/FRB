@@ -83,6 +83,10 @@ FRBpcaMM(Y, R = 999, conf = 0.95, control=MMcontrol(...), ...)
 \item{failedsamples}{number of bootstrap samples with non-positive definiteness of shape }
 \item{conf}{ a copy of the \code{conf} argument}
 \item{method}{ a character string giving the robust PCA method that was used}
+\item{w}{implicit weights corresponding to the MM-estimates (i.e. final weights in the RWLS procedure)}
+\item{outFlag}{outlier flags: 1 if the robust distance of the observation exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of \code{Y}; 0 otherwise}
+\item{Y}{copy of the data argument as a matrix}
 }
 \references{ 
 \itemize{

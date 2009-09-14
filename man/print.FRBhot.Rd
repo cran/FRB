@@ -6,22 +6,19 @@
   This is the print method for objects of class \code{FRBhot} representing a robust Hotelling test.
 }
 \usage{
-\method{print}{FRBhot}(x, digits = 3, ...)
+\method{print}{FRBhot}(x, digits = 5, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{ an \R object of class \code{FRBhot}, typically created by \code{\link{FRBhotellingS}} or \code{\link{FRBhotellingMM}} }
-  \item{digits}{ number of digits for printing (defaulting to 3) }
+  \item{digits}{ number of digits for printing (defaulting to 4) }
   \item{\dots}{ potentially more arguments }
 }
 \details{
-The \code{FRBhot} print function displays practically all components in the \code{FRBhot} object as returned by \code{\link{FRBhotellingS}}
-or \code{\link{FRBhotellingMM}}. In particular, apart from the test statistic and bootstrap p-value, the output shows 
-simultaneous confidence intervals for the (difference in) mean(s). The corresponding robust estimates of the (difference in) mean(s)
-are also given, as well as the robust estimate of (common) covariance.     
+The \code{FRBhot} print function displays basically just the test statistic and bootstrap p-value.
 }
 \author{ Gert Willems and Ella Roelant }
-\seealso{ \code{\link{FRBhotellingS}}, \code{\link{FRBhotellingMM}} }
+\seealso{ \code{\link{summary.FRBhot}}, \code{\link{FRBhotellingS}}, \code{\link{FRBhotellingMM}} }
 \examples{
 
 data(delivery)

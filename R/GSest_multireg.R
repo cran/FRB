@@ -310,11 +310,12 @@ return(res)
 #---------------------------------------------------------------------------
 IRLSlocation <- function(xmat,covmat,bdp,cc)
 {
+xmat <- as.matrix(xmat)
 n <- nrow(xmat)
 p <- ncol(xmat)
-
 neem <- sample(n,p+1)
-xsub <- xmat[neem,]
+xsub <- as.matrix(xmat[neem,])
+
 
 initmu <- apply(xsub,2,mean)
 initrdis <- sqrt(mahalanobis(xmat, initmu, covmat))
@@ -327,7 +328,7 @@ itertest <- 0
 while ((sum(weights)==0) && (itertest<500)) {
     
     neem <- sample(n,p+1)
-    xsub <- xmat[neem,]
+    xsub <- as.matrix(xmat[neem,])
    
     initmu <- apply(xsub,2,mean)
     initrdis <- sqrt(mahalanobis(xmat, initmu, covmat))
@@ -488,7 +489,12 @@ GScovariance <- superbestgamma*superbestscale^2
 intercept <- IRLSlocation(Y-X%*%GSbeta,GScovariance,bdp=bdp,cc=cc)
 GSbetatot <- rbind(intercept,GSbeta)
 
-return(list( Beta = GSbetatot, Gamma = superbestgamma, scale = superbestscale, Sigma = GScovariance,b=b,c=cc))
+Res <- Y-X%*%GSbeta
+psres <- sqrt(mahalanobis(Res, intercept, GScovariance))
+w <- scaledpsibiweight(psres,cc)
+outFlag <- (psres > sqrt(qchisq(.975, q)))
+
+return(list( Beta = GSbetatot, Gamma = superbestgamma, scale = superbestscale, Sigma = GScovariance,b=b,c=cc, w=w, outFlag=outFlag))
 }
 
 

@@ -302,9 +302,13 @@ for (i in bestr:1) {
         superbestgamma <- tmp$Gamma;
     }
 }
+Res <- Y-X%*%superbestbeta
+psres <- sqrt(mahalanobis(Res, rep(0,m), superbestgamma))/superbestscale
+w <- scaledpsibiweight(psres,c0)
+outFlag <- (psres > sqrt(qchisq(.975, m)))
 
 return(list( Beta = superbestbeta, Gamma = superbestgamma, scale = superbestscale, 
-                    Sigma = superbestgamma*superbestscale^2, b=b, c=c0))
+                    Sigma = superbestgamma*superbestscale^2, b=b, c=c0, w=w, outFlag=outFlag))
 
 }
 

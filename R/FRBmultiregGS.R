@@ -121,6 +121,19 @@ if (R>1) {
   upperlimitsBeta.bca <- reconvec(bootres$CI.bca[1:(p*q),2], q)
   lowerlimitsBeta.basic <- reconvec(bootres$CI.basic[1:(p*q),1], q)
   upperlimitsBeta.basic <- reconvec(bootres$CI.basic[1:(p*q),2], q)
+  pBeta.bca <- reconvec(bootres$p.bca[1:(p*q)], q)
+  pBeta.basic <- reconvec(bootres$p.basic[1:(p*q)], q)
+  if (bootres$ROK<2) {
+    bootres <- NULL
+    stdsBeta <- NULL
+
+    lowerlimitsBeta.bca <- NULL
+    upperlimitsBeta.bca <- NULL
+    lowerlimitsBeta.basic <- NULL
+    upperlimitsBeta.basic <- NULL
+    pBeta.bca <- NULL
+    pBeta.basic <- NULL
+  }
 }
 else {
   bootres <- NULL
@@ -130,6 +143,8 @@ else {
   upperlimitsBeta.bca <- NULL
   lowerlimitsBeta.basic <- NULL
   upperlimitsBeta.basic <- NULL
+  pBeta.bca <- NULL
+  pBeta.basic <- NULL
 }
 
 ####################################################################################
@@ -139,7 +154,7 @@ method <- list(est="GS", bdp=bdp)
 
 z <- list(est=GSests,bootest=bootres,Beta=GSBeta,intercept=GSint,Sigma=GSSigma, SE=stdsBeta, 
        CI.bca.lower=lowerlimitsBeta.bca,CI.bca.upper=upperlimitsBeta.bca,CI.basic.lower=lowerlimitsBeta.basic, CI.basic.upper=upperlimitsBeta.basic,
-       conf=conf, method=method, control=control, X=X, Y=Y)
+       p.bca=pBeta.bca, p.basic=pBeta.basic, conf=conf, method=method, control=control, X=X, Y=Y, ROK=bootres$ROK, w=GSests$w, outFlag=GSests$outFlag)
 
 class(z) <- "FRBmultireg"
   

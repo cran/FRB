@@ -4,8 +4,8 @@
 \alias{FRBmultiregMM.formula}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{MM-Estimates for Multivariate Regression with Bootstrap Inference}
-\description{Computes MM-estimates for multivariate regression together with standard errors and confidence intervals
-based on the Fast and Robust Bootstrap.
+\description{Computes MM-estimates for multivariate regression together with standard errors, confidence intervals
+and p-values based on the Fast and Robust Bootstrap.
 }
 \usage{
 \method{FRBmultiregMM}{formula}(formula, data, ...)
@@ -37,14 +37,21 @@ The default tuning of the second loss function (M-estimate) ensures 95\% efficie
 This tuning is recommended but can be changed through argument \code{control} if desired. 
 
 The computation is carried out by a call to \code{\link{MMest_multireg}}(), which first performs the fast-S algorithm 
-(see \code{\link{Sest_multireg}}) and does the M-part by reweighted least squares iteration. 
+(see \code{\link{Sest_multireg}}) and does the M-part by reweighted least squares (RWLS) iteration. 
 See \code{\link{MMcontrol}} for some adjustable tuning parameters regarding the algorithm.
 The result of this call is also returned as the value \code{est}.
 
-The Fast and Robust Bootstrap (Salibian-Barrera and Zamar 2002) is used to calculate 
-so-called basic bootstrap confidence intervals and bias corrected and accelerated 
-confidence intervals (Davison and Hinkley 1997, p.194 and p.204 respectively). This computation is carried out by a call to \code{\link{MMboot_multireg}}(), the result 
+The Fast and Robust Bootstrap (Salibian-Barrera and Zamar 2002) is used to calculate so-called
+basic bootstrap confidence intervals and bias corrected and accelerated (BCa)
+confidence intervals (Davison and Hinkley 1997, p.194 and p.204 respectively). 
+Apart from the intervals with the requested confidence level, the function also returns p-values for each coefficient
+corresponding to the hypothesis that the actual coefficient is zero. The p-values are computed as 
+1 minus the smallest level for which the confidence intervals would include zero. Both BCa and basic bootstrap p-values in this sense are given.
+The bootstrap calculation is carried out by a call to \code{\link{MMboot_multireg}}(), the result 
 of which is returned as the value \code{bootest}. Bootstrap standard errors are returned as well.
+
+Note: Bootstrap samples which contain too few distinct observations with positive weights are discarded 
+(a warning is given if this happens). The number of samples actually used is returned via \code{ROK}. 
 
 In the \code{formula}-interface, a multivariate response is produced via \code{cbind}. For example \code{cbind(x4,x5) ~ x1+x2+x3}.
 All arguments from the default method can also be passed to the \code{formula} method except for \code{int} (passing \code{int} explicitely
@@ -59,6 +66,8 @@ will produce an error; the inclusion of an intercept term is determined by \code
   \item{CI.bca.upper}{ a matrix containing the upper bounds of the bias corrected and accelerated confidence intervals for each element in \code{Beta}.}
   \item{CI.basic.lower}{ a matrix containing the lower bounds of basic bootstrap intervals for each element in \code{Beta}.}
   \item{CI.basic.upper}{ a matrix containing the upper bounds of basic bootstrap intervals for each element in \code{Beta}.}
+  \item{p.bca}{ a matrix containing the p-values based on the BCa confidence intervals for each element in \code{Beta}.}
+  \item{p.basic}{ a matrix containing the p-values based on the basic bootstrap intervals for each element in \code{Beta}.}
   \item{est }{MM-estimates as returned by the call to \code{\link{MMest_multireg}}()}
   \item{bootest}{bootstrap results for the MM-estimates as returned by the call to \code{\link{MMboot_multireg}}()}
   \item{conf}{ a copy of the \code{conf} argument}
@@ -66,6 +75,11 @@ will produce an error; the inclusion of an intercept term is determined by \code
   \code{bdp} = a copy of \code{bdp} from the \code{control} argument, and \code{eff} = a copy of \code{eff} from the \code{control} argument}
   \item{control}{ a copy of the \code{control} argument }
   \item{X, Y}{either copies of the respective arguments or the corresponding matrices produced from \code{formula}} 
+  \item{ROK}{number of bootstrap samples actually used (i.e. not discarded due to too few distinct observations 
+  with positive weight)}
+  \item{w}{implicit weights corresponding to the MM-estimates (i.e. final weights in the RWLS procedure)}
+  \item{outFlag}{outlier flags: 1 if the robust distance of the residual exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of the responses; 0 otherwise}
 }
 \references{ 
 \itemize{
@@ -103,7 +117,7 @@ MMres <- FRBmultiregMM(cbind(reading,mathematics,selfesteem)~., data=schooldata,
 #the print method displays the coefficients with their bootstrap standard errors
 MMres
 
-#the summary function additionally displays the confidence intervals 
+#the summary function additionally displays the confidence intervals and p-values
 #("BCA" method by default)
 summary(MMres)
 

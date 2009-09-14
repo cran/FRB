@@ -32,6 +32,9 @@ A list containing:
   \item{Sigma}{S-estimate of covariance}
   \item{scale}{S-estimate of scale (univariate)}
   \item{b,c}{tuning parameters used in Tukey biweight loss function, as determined by \code{bdp}}
+  \item{w}{implicit weights corresponding to the S-estimates (i.e. final weights in the RWLS procedure at the end of the fast-S algorithm)}
+  \item{outFlag}{outlier flags: 1 if the robust distance of the observation exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of \code{Y}; 0 otherwise}
 }
 \references{ 
 \itemize{

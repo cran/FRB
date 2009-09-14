@@ -1,4 +1,4 @@
-Sboottwosample <-function(X, groups, R, ests=twosampleS(X,groups))
+Sboot_twosample <-function(X, groups, R, ests=Sest_twosample(X,groups))
 {
 # Robust bootstrap for two populations S-estimator
 # INPUT:

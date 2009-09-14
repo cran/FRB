@@ -148,8 +148,13 @@ if (newobj <= origobj) {
     rescovariance <- Sresult$Gamma*auxscale^2
 }
 
+Res <- Y-X%*%resBeta
+psres <- sqrt(mahalanobis(Res, rep(0,m), rescovariance))
+w <- scaledpsibiweight(psres,c1)
+outFlag <- (psres > sqrt(qchisq(.975, m)))
+
 return(list(Beta=resBeta, Gamma=resshape, Sigma=rescovariance, SBeta=Sresult$Beta,
         SGamma=Sresult$Gamma, SSigma=Sresult$Gamma*auxscale^2, scale=auxscale,
-        c1 = c1, c0 = Sresult$c, b = Sresult$b))
+        c1 = c1, c0 = Sresult$c, b = Sresult$b, w=w, outFlag=outFlag))
  
 }

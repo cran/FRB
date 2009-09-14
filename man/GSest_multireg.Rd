@@ -33,6 +33,9 @@ and Yohai (2006) for the regression case. See \code{\link{GScontrol}} for the ad
   \item{Sigma}{GS-estimate of the error covariance matrix}
   \item{scale}{GS-estimate of the error scale (univariate)}
   \item{b,c}{tuning parameters used in Tukey biweight loss function, as determined by \code{bdp}}
+  \item{w}{implicit weights corresponding to the GS-estimates (i.e. final weights in the RWLS procedure for the intercept estimate)}
+  \item{outFlag}{outlier flags: 1 if the robust distance of the residual exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of the responses; 0 otherwise}
 }
 \references{
 \itemize{ 

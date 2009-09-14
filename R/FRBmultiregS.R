@@ -109,7 +109,21 @@ if (R>1) {
   upperlimitsBeta.bca <- reconvec(bootres$CI.bca[1:(p*q),2], q)
   lowerlimitsBeta.basic <- reconvec(bootres$CI.basic[1:(p*q),1], q)
   upperlimitsBeta.basic <- reconvec(bootres$CI.basic[1:(p*q),2], q)
-} else
+  pBeta.bca <- reconvec(bootres$p.bca[1:(p*q)], q)
+  pBeta.basic <- reconvec(bootres$p.basic[1:(p*q)], q)
+    if (bootres$ROK<2) {
+    bootres <- NULL
+    stdsBeta <- NULL
+
+    lowerlimitsBeta.bca <- NULL
+    upperlimitsBeta.bca <- NULL
+    lowerlimitsBeta.basic <- NULL
+    upperlimitsBeta.basic <- NULL
+    pBeta.bca <- NULL
+    pBeta.basic <- NULL
+  }
+} 
+else
 {
   bootres <- NULL
   stdsBeta <- NULL
@@ -118,7 +132,10 @@ if (R>1) {
   upperlimitsBeta.bca <- NULL
   lowerlimitsBeta.basic <- NULL
   upperlimitsBeta.basic <- NULL
+  pBeta.bca <- NULL
+  pBeta.basic <- NULL
 }
+
 ####################################################################################
 
 #method <- paste("Multivariate regression based on multivariate S-estimates (breakdown point = ", bdp, ")", sep="")
@@ -126,7 +143,7 @@ method <- list(est="S", bdp=bdp)
                                                                                                               
 z <- list(est=Sests, bootest=bootres, Beta=SBeta, Sigma=SSigma, SE=stdsBeta, CI.bca.lower=lowerlimitsBeta.bca, 
         CI.bca.upper=upperlimitsBeta.bca, CI.basic.lower=lowerlimitsBeta.basic, CI.basic.upper=upperlimitsBeta.basic,
-        conf=conf, method=method, control=control, X=X, Y=Y)
+        p.bca=pBeta.bca, p.basic=pBeta.basic, conf=conf, method=method, control=control, X=X, Y=Y, ROK=bootres$ROK, w=Sests$w, outFlag=Sests$outFlag)
 
 class(z) <- "FRBmultireg"
   

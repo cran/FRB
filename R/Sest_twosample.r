@@ -1,4 +1,4 @@
-twosampleS<-function(X, groups, bdp=0.5, control=Scontrol(...),...)
+Sest_twosample<-function(X, groups, bdp=0.5, control=Scontrol(...),...)
 {
 # fast S algorithm for two-sample location and common scatter
 # INPUT:
@@ -389,7 +389,14 @@ for (i in bestr:1)  {
         superbestgamma <- tmp$Gamma
     }
 }
-return(list(Mu1=superbestmu1,Mu2=superbestmu2,Gamma=superbestgamma,Sigma = superbestscale^2*superbestgamma,scale=superbestscale,c=c,b=b))
+
+R1 <- X1 - matrix(rep(superbestmu1,n1), n1, byrow=TRUE)
+R2 <- X2 - matrix(rep(superbestmu2,n2), n2, byrow=TRUE)
+psres <- sqrt(mahalanobis(rbind(R1,R2),rep(0,p),superbestgamma))/superbestscale
+w <- scaledpsibiweight(psres,c)
+outFlag <- (psres > sqrt(qchisq(.975, p)))
+
+return(list(Mu1=superbestmu1,Mu2=superbestmu2,Gamma=superbestgamma,Sigma = superbestscale^2*superbestgamma,scale=superbestscale,c=c,b=b,w=w,outFlag=outFlag))
 }
 
 

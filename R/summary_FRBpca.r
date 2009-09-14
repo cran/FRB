@@ -1,5 +1,5 @@
 
-summary.FRBpca <- function(object, confmethod = c("BCA","basic","both"), ...) {
+summary.FRBpca <- function(object, confmethod = c("BCA","basic","both"), digits=3, ...) {
 
 confmethod <- match.arg(confmethod)
 q <- length(object$eigval)
@@ -41,7 +41,7 @@ else if (confmethod == "both") {
   dimnames(pvartable) <- list(paste("k=", 1:q, sep=""),c("Est.", paste("(BCa ",object$conf*100,"% lower",sep=""), "  upper)", paste("(basic ",object$conf*100,"% lower",sep=""), "  upper)"))
 }
 
-res <- list(eigvals=eigvalstoprint, eigvecs=object$eigvec, avgangle=avgangletoprint, pvars=pvartable, method=object$method)
+res <- list(eigvals=eigvalstoprint, eigvecs=object$eigvec, avgangle=avgangletoprint, pvars=pvartable, method=object$method, digits=digits)
 class(res) <- "summary.FRBpca"
 
 res
@@ -50,20 +50,21 @@ res
 
 ###############################################################################
 
-print.summary.FRBpca <- function(x, digits=3, ...) {
+print.summary.FRBpca <- function(x, ...) {
 
 cat(x$method, "\n\n")
 cat("Eigenvalues:\n")
-print(x$eigvals, digits = digits)
+print(x$eigvals, digits = x$digits)
 cat("\n")
 cat("Principal components loadings:\n")
-print(x$eigvecs, digits = digits)
+print(x$eigvecs, digits = x$digits)
 cat("\n")
-cat("Average angle between PC and its bootstrapped versions (in [0 - pi/2], cf. aligned - perpendicular):\n")
-print(x$avgangle, digits = digits)
+cat("Average angle between PC and its bootstrapped versions:\n")
+print(x$avgangle, digits = x$digits)
+cat("(in [0 - pi/2], cf. aligned - perpendicular)\n")
 cat("\n")
 cat("Percentage of variance explained by first k components:\n")
-print(x$pvars, digits = digits)
+print(x$pvars, digits = x$digits)
 
 }
 

@@ -43,7 +43,7 @@ A list with the tuning parameters as set by the arguments.
 \author{ Gert Willems and Ella Roelant }
 
 \seealso{ \code{\link{Sest_loccov}}, \code{\link{MMest_loccov}},  \code{\link{GSest_multireg}},  \code{\link{Sest_multireg}}, 
-\code{\link{GSest_multireg}},  \code{\link{twosampleS}},  \code{\link{twosampleMM}}, \code{\link{FRBpcaS}}, ... }
+\code{\link{MMest_multireg}},  \code{\link{Sest_twosample}},  \code{\link{MMest_twosample}}, \code{\link{FRBpcaS}}, ... }
 \examples{
 ## Show the default settings:
 str(Scontrol())

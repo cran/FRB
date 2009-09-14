@@ -125,15 +125,12 @@ bootsampleOK <- rep(1,R)
 bootsampleOKreally <- rep(1,R)
 
 for (r in 1:R) {
-    print(r)
     correctedSSigmast <- reconvec(bootres$centered[(q+1):dimens,r],q) + SSigma
     detSigma <- det(correctedSSigmast)
     if (detSigma<0) {
-        print(detSigma)
         bootsampleOK[r] <- 0
         correctedSSigmast <- make.positive.definite(correctedSSigmast)
         detSigma <- prod(eigen(correctedSSigmast)$values) # to be safe
-        print(detSigma)
         if (is.complex(detSigma) | Re(detSigma)<=0) {bootsampleOKreally[r] <- 0; next}
     }
     correctedSGammast <- detSigma^(-1/q) * correctedSSigmast
@@ -274,7 +271,7 @@ z <- list(est=Sests, bootest=bootres, shape=SGamma, eigval=SeigvalsGamma, eigvec
         eigval.SE=sqrt(eigGvariances), eigvec.SE=sqrt(reconvec(eigvecvariances,q)), pvar.SE=sqrt(pvarvariances), 
         angles=bootangles, avgangle=avgangle, eigval.CI.bca=eigGCIbca, eigvec.CI.bca=eigvecCIbca, pvar.CI.bca=pvarCIbca, pvar.CIone.bca=pvarCIbcaone, 
         eigval.CI.basic=eigGCIbasic, eigvec.CI.basic=eigvecCIbasic, pvar.CI.basic=pvarCIbasic, pvar.CIone.basic=pvarCIbasicone, 
-        failedsamples=nfailed, conf=conf, method=method)
+        failedsamples=nfailed, conf=conf, method=method, w=Sests$w, outFlag=Sests$outFlag, Y=Y)
         
 class(z) <- "FRBpca"    
 

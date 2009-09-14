@@ -30,6 +30,12 @@ estimates, which are also returned through \code{vecest} in vectorized form.
 
 The output list further contains bootstrap standard errors, as well as so-called basic bootstrap confidence intervals and bias corrected and accelerated 
 confidence intervals (Davison and Hinkley, 1997, p.194 and p.204 respectively). 
+Also in the output are p-values defined as 1 minus the smallest confidence level for which the confidence intervals would include the 
+(hypothesised) value of zero. Both BCa and basic bootstrap p-values are given. These are only useful for the
+regression coefficient estimates (not really for the covariance estimates).
+
+Bootstrap samples which contain too few distinct observations with positive weights are discarded 
+(a warning is given if this happens). The number of samples actually used is returned via \code{ROK}. 
 }
 \value{
   A list containing the following components:
@@ -41,7 +47,12 @@ confidence intervals (Davison and Hinkley, 1997, p.194 and p.204 respectively).
   estimates in \code{vecest} (first column are lower limits, second column are upper limits)}
   \item{CI.basic }{ a matrix containing basic bootstrap intervals, corresponding to the 
   estimates in \code{vecest} (first column are lower limits, second column are upper limits)}
-  
+  \item{p.bca }{a vector containing p-values based on the bias corrected and accelerated confidence intervals (corresponding to the 
+  estimates in \code{vecest})}
+  \item{p.basic }{a vector containing p-values based on the basic bootstrap intervals (corresponding to the 
+  estimates in \code{vecest})}
+  \item{ROK }{number of bootstrap samples actually used (i.e. not discarded due to too few distinct observations 
+  with positive weight)}
 }
 \references{
 \itemize{ 

@@ -28,7 +28,8 @@ MMest_multireg(X, Y, control=MMcontrol(...), ...)
   This tuning can be changed via argument \code{control} if desired.
   
   The computation of the S-estimates is performed by a call to \code{\link{Sest_multireg}}, which uses the fast-S algorithm. 
-  See \code{\link{MMcontrol}}() to see or change the tuning parameters for this algorithm.
+  See \code{\link{MMcontrol}}() to see or change the tuning parameters for this algorithm. The M-estimate part is computed
+  through iteratively reweighted least squares (RWLS).
   
   Apart from the MM-estimate of the regression coefficients \code{Beta}, the function returns both the MM-estimate of the error 
   covariance \code{Sigma} and the corresponding shape estimate \code{Gamma} (which has determinant equal to 1). 
@@ -45,6 +46,9 @@ A list containing:
   \item{SGamma}{S-estimate of the error shape matrix}
   \item{scale }{S-estimate of scale (univariate)}
   \item{c0,b,c1}{tuning parameters of the loss functions (depend on control parameters \code{bdp} and \code{eff})}
+  \item{w}{implicit weights corresponding to the MM-estimates (i.e. final weights in the RWLS procedure)}
+  \item{outFlag}{outlier flags: 1 if the robust distance of the residual exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of the responses; 0 otherwise}
 }
 \references{ 
 \itemize{
@@ -70,6 +74,16 @@ school.y <- data.matrix(schooldata[,6:8])
 MMres <- MMest_multireg(school.x,school.y)
 # the MM-estimate of the regression coefficient matrix:
 MMres$Beta
+
+n <- nrow(school.x)
+par(mfrow=c(2,1))
+# the estimates can be considered as weighted least squares estimates with the 
+# following implicit weights
+plot(1:n, MMres$w)
+# Sres$outFlag tells which points are outliers based on whether or not their 
+# robust distance exceeds the .975 chi-square cut-off:
+plot(1:n, MMres$outFlag)
+# (see also the diagnostic plot in plotDiag())
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -7,7 +7,7 @@ Robust one-sample and two-sample Hotelling test using the S-estimator and the Fa
 }
 \usage{
 FRBhotellingS(Xdata, Ydata=NULL, mu0 = 0, R = 999, bdp = 0.5, conf = 0.95, 
-                method = c("pool", "HeFung"), control=Scontrol(...), ...)
+                method = c("HeFung", "pool"), control=Scontrol(...), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,15 +28,17 @@ true value of the mean (does not apply in case of the two-sample test). Default 
 are equal is modified into a robust one through substitution of the empirical estimates 
 by the S-estimates of location and scatter. The S-estimator uses Tukey's biweight function where the constant is chosen
 to obtain the desired breakdown point as specified by \code{bdp}. 
-The S-estimator is computed by a call to \code{\link{Sest_loccov}}() or \code{\link{twosampleS}}(), in case of one- and two-sample 
-tests respectively. These functions implement a fast-S-type algorithm, the tuning parameters of which can be changed via \code{control}.
+The S-estimator is computed by a call to \code{\link{Sest_loccov}}() or \code{\link{Sest_twosample}}(), depending 
+on the type of test. These functions implement a fast-S-type algorithm, the tuning parameters of which can be changed via \code{control}.
 
 The fast and robust bootstrap is used to mimic the distribution of the test statistic under the null hypothesis. 
 For instance, the 5\% critical value for the test is given by the 95\% quantile of the recalculated statistics. 
 
-Robust simultaneous confidence intervals for linear combinations of the center are developed similarly to the classical case 
-(Johnson and Wichern, 1988, page 239). The value \code{CI} is a (p x 2) matrix with the confidence intervals for each element 
-of the center. It consists of two rows, the first being the lower bound and the second the upper bound. 
+Robust simultaneous confidence intervals for linear combinations of the mean (or difference in means) are developed similarly to the classical case
+(Johnson and Wichern, 1988, page 239). The value \code{CI} is a matrix with the confidence intervals for each element
+of the mean (or difference in means), with level \code{conf}. It consists of two rows, the first being the lower bound and the second the upper bound.
+Note that these intervals are rather conservative in the sense that the simultaneous confidence level holds for all linear combinations
+and here only \eqn{p} of these are considered (with \eqn{p} the dimension of the data).
 
 For the two-sample Hotelling test we assume that the samples have an underlying distribution with the same covariance matrix.
 This covariance matrix can be estimated in two different ways using the pooled covariance matrix or the two-sample 
@@ -45,6 +47,9 @@ For more details see Roelant et al. (2008).
 
 In the two-sample version, the null hypothesis always states that the two means are equal. For the one-sample version, the default
 null hypothesis is that the mean equals zero, but the hypothesized value can be changed and specified through argument \code{mu0}.
+ 
+Bootstrap samples are discarded if the fast and robust covariance estimate is not positive definite, such that the actual number 
+of recalculations used can be lower than \code{R}. This number is returned as \code{ROK}.
  
 See \code{\link{print.FRBhot}} for details on the output.              
 }
@@ -61,6 +66,11 @@ An object of class \code{FRBhot}, which is a list containing the following compo
 \item{conf }{a copy of the \code{conf} argument}
 \item{data }{the names of the \code{Xdata} and possibly \code{Ydata} object}
 \item{meth }{a character string giving the estimator that was used}
+\item{X, Y}{copies of the \code{Xdata} and \code{Ydata} arguments as matrices}
+\item{w}{implicit weights corresponding to the S-estimates (i.e. final weights in the RWLS procedure at the end of the fast-S algorithm)}
+\item{outFlag}{outlier flags: 1 if the robust distance of the observation exceeds the .975 quantile of (the square root of)
+  the chi-square distribution with degrees of freedom equal to the dimension of \code{Xdata}; 0 otherwise}
+\item{ROK}{number of bootstrap samples actually used (i.e. not discarded due to non-positive definite covariance }
 }
 \references{ 
 \itemize{
@@ -79,12 +89,31 @@ bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71.
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{ \code{\link{print.FRBhot}}, \code{\link{FRBhotellingMM}}, \code{\link{Scontrol}} }
+\seealso{ \code{\link{plot.FRBhot}},\code{\link{print.FRBhot}}, \code{\link{FRBhotellingMM}}, \code{\link{Scontrol}} }
 \examples{
 ## One sample robust Hotelling test
 data(delivery)
 delivery.x <- delivery[,1:2]
 FRBhotellingS(delivery.x)
+
+## One sample robust Hotelling test
+data(ForgedBankNotes)
+samplemean <- apply(ForgedBankNotes, 2, mean)
+res = FRBhotellingS(ForgedBankNotes, mu0=samplemean)
+res
+# Note that the test rejects the hypothesis that the true mean equals the
+# sample mean; this is due to outliers in the data (i.e. the robustly estimated
+# mean apparently significantly differs from the non-robust sample mean.
+
+# Graphical display of the results:
+plot(res)
+# It is clear from the (scaled) simultaneous confidence limits that the rejection
+# of the hypothesis is due to the differences in variables Bottom and Diagonal
+
+# For comparison, the hypothesis would be accepted if only the first three
+# variables were considered:
+res = FRBhotellingS(ForgedBankNotes[,1:3], mu0=samplemean[1:3])
+plot(res)
 
 ## Two sample robust Hotelling test
 data(hemophilia)
@@ -93,10 +122,16 @@ x <- hemophilia[which(grp==levels(grp)[1]),1:2]
 y <- hemophilia[which(grp==levels(grp)[2]),1:2]
 
 #using the pooled covariance matrix to estimate the common covariance matrix
-FRBhotellingS(x,y,method="pool")
+res = FRBhotellingS(x,y,method="pool")
 
 #using the estimator of He and Fung to estimate the common covariance matrix
-FRBhotellingS(x,y,method="HeFung")
+res = FRBhotellingS(x,y,method="HeFung")
+
+# From the confidence limits it can be seen that the significant difference
+# is mainly caused by the AHFactivity variable. The graphical display helps too:
+plot(res)
+# the red line on the histogram indicates the test statistic value in the original
+# sample (it is omitted if the statistic exceeds 100)
 
 }
 

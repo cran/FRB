@@ -7,16 +7,16 @@
 Summary method for objects of class \code{FRBmultireg}, and print method of the summary object.
 }
 \usage{
-\method{summary}{FRBmultireg}(object, confmethod = c("BCA", "basic", "both"), ...)
-\method{print}{summary.FRBmultireg}(x, digits = 3, ...)
+\method{summary}{FRBmultireg}(object, confmethod = c("BCA", "basic", "both"), digits = 3, ...)
+\method{print}{summary.FRBmultireg}(x, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{ an \R object of class \code{FRBmultireg}, typically created by \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}} or \code{\link{FRBmultiregGS}} }
   \item{confmethod}{ which kind of bootstrap confidence intervals to be displayed: 
 'BCA'= bias corrected and accelerated method, 'basic'= basic bootstrap method, 'both'=both kinds of confidence intervals }
-  \item{x}{ an \R object of class \code{summary.FRBmultireg}, resulting for example from \code{summary(\link{FRBmultiregS}(),...)} }
   \item{digits}{ number of digits for printing (defaulting to 3) }
+    \item{x}{ an \R object of class \code{summary.FRBmultireg}, resulting for example from \code{summary(\link{FRBmultiregS}(),...)} }
   \item{\dots}{ potentially more arguments to be passed to methods }
 }
 \details{
@@ -28,12 +28,13 @@ The \code{print} method displays the components of the \code{summary} object, pr
   \item{covariates}{the names of the covariates (predictors) in the fitted model}
   \item{Betawstd}{a data frame containing the coefficient estimates and their bootstrap standard errors}
   \item{Sigma}{estimate for the error covariance matrix}
-  \item{limits.bca}{a list with for each response variable a matrix containing the lower and upper limits of the 
-      BCa confidence intervals (only present when \code{confmethod="BCA"} or \code{confmethod="both"})}
-  \item{limits.basic}{a list with for each response variable a matrix containing the lower and upper limits of the 
-      basic bootstrap confidence intervals (only present when \code{confmethod="basic"} or \code{confmethod="both"})}
+  \item{table.bca}{a list with for each response variable a matrix containing the estimates, standard errors, lower and upper limits of the 
+      BCa confidence intervals, p-values and a significance code (only present when \code{confmethod="BCA"} or \code{confmethod="both"})}
+  \item{table.basic}{a list with for each response variable a matrix containing the estimates, standard errors, lower and upper limits of the 
+      basic bootstrap confidence intervals, p-values and a significance code (only present when \code{confmethod="basic"} or \code{confmethod="both"})}
   \item{method }{multivariate regression method that was used}
   \item{conf}{confidence level that was used}
+  \item{digits}{ number of digits for printing }
 }
 \author{ Gert Willems and Ella Roelant }
 \seealso{ \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}}, \code{\link{FRBmultiregGS}},  \code{\link{print.FRBmultireg}}, \code{\link{plot.FRBmultireg}} }

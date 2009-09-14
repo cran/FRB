@@ -1,9 +1,9 @@
-FRBhotellingS <-function(Xdata,Ydata=NULL,mu0=0,R=999,bdp=0.5,conf=0.95,method=c("pool","HeFung"),control=Scontrol(...), ...)
+FRBhotellingS <-function(Xdata,Ydata=NULL,mu0=0,R=999,bdp=0.5,conf=0.95,method=c("HeFung","pool"),control=Scontrol(...), ...)
 {
 # performs robust Hotelling test based on multivariate S estimates 
 # with fast and robust bootstrap
 #
-# calls: Sest_loccov(), Sboot_loccov(), twosampleS(), Sboottwosample()
+# calls: Sest_loccov(), Sboot_loccov(), Sest_twosample(), Sboot_twosample()
 #
 # Input
 # Xdata: (n x p) data set
@@ -89,7 +89,7 @@ for (i in 1:p) {
 dimnames(conf.int) <- list(c("Lower bound","Upper bound"),dimnames(Xdata)[[2]]) 
 rownames(Smu) <- ("   Estimate")
 
-return(list(teststat=teststat,testvect=testvect,pvalue=pvalue,loc=Smu,cov=SSigma,confint=conf.int))
+return(list(teststat=teststat,testvect=testvect,pvalue=pvalue,loc=Smu,cov=SSigma,confint=conf.int,w=Sests$w,outFlag=Sests$outFlag,ROK=Rok))
 
 }
 #-------------------------------------------------------------------------------
@@ -106,6 +106,8 @@ p <- ncol(Xdata1)
 dimens <- p+p*p
 Sests1 <- Sest_loccov(Xdata1,bdp=bdp,control=control)
 Sests2 <- Sest_loccov(Xdata2,bdp=bdp,control=control)
+w <- c(Sests1$w, Sests2$w)
+outFlag <- c(Sests1$outFlag, Sests2$outFlag)
 Smu1 <- Sests1$Mu
 SSigma1 <- Sests1$Sigma
 Smu2 <- Sests2$Mu
@@ -152,7 +154,7 @@ for (i in 1:p) {
 dimnames(conf.int) <- list(c("Lower bound","Upper bound"),dimnames(Xdata)[[2]]) 
 rownames(Smu1) <- rownames(Smu2) <- ("   Estimate")
 
-return(list(teststat=teststatS,testvect=testvectS,pvalue=pvalue,loc1=Smu1,loc2=Smu2,cov=SSigmap,confint=conf.int))
+return(list(teststat=teststatS,testvect=testvectS,pvalue=pvalue,loc1=Smu1,loc2=Smu2,cov=SSigmap,confint=conf.int,w=w,outFlag=outFlag,ROK=Rok))
 
 }
 
@@ -169,13 +171,13 @@ p <- ncol(Xdata1)
 dimens <- 2*p+p*p
 Xdata <- rbind(Xdata1,Xdata2)
 groups <- c(rep(1,n1),rep(2,n2))
-Sests <- twosampleS(Xdata, groups, bdp, control=control)
+Sests <- Sest_twosample(Xdata, groups, bdp, control=control)
 Smu1 <- Sests$Mu1
 Smu2 <- Sests$Mu2
 SSigmap <- Sests$Sigma
 
 teststatS <- ((n1*n2)/(n1+n2))*(Smu1-Smu2)%*%solve(SSigmap)%*%t(Smu1-Smu2)
-bootres <- Sboottwosample(Xdata, groups,R,ests=Sests)
+bootres <- Sboot_twosample(Xdata, groups,R,ests=Sests)
 bmatrixs <- bootres$centered
 
 testvectS <- c()
@@ -208,7 +210,7 @@ for (i in 1:p) {
 dimnames(conf.int) <- list(c("Lower bound","Upper bound"),dimnames(Xdata)[[2]]) 
 rownames(Smu1) <- rownames(Smu2) <- ("   Estimate")
 
-return(list(teststat=teststatS,testvect=testvectS,pvalue=pvalue,loc1=Smu1,loc2=Smu2,cov=SSigmap,confint=conf.int))
+return(list(teststat=teststatS,testvect=testvectS,pvalue=pvalue,loc1=Smu1,loc2=Smu2,cov=SSigmap,confint=conf.int,w=Sests$w, outFlag=Sests$outFlag,ROK=Rok))
 }
 
 
@@ -242,7 +244,7 @@ if (nrsamples ==1)
    meth = paste("One sample Hotelling test based on multivariate S-estimates (breakdown point = ", bdp, ")", sep="")
    res=hottest1S(Xdatam,mu0=mu0,bdp=bdp,R=R,conf=conf,control=control)
    z <- list(pvalue=res$pvalue,teststat=res$teststat,teststat.boot=res$testvect,Mu=res$loc,Sigma=res$cov,
-          CI=res$confint,Mu0=mu0,conf=conf,data=substitute(Xdata),meth=meth)
+          CI=res$confint,Mu0=mu0,conf=conf,data=substitute(Xdata),meth=meth,X=Xdatam,w=res$w, outFlag=res$outFlag,ROK=res$ROK)
    }
 else 
     {
@@ -257,7 +259,7 @@ else
       res=hottest2SHe(Xdatam,Ydatam,bdp=bdp,R=R,conf=conf,control=control)
     }
     z <- list(pvalue=res$pvalue,teststat=res$teststat,teststat.boot=res$testvect,Mu1=res$loc1,Mu2=res$loc2,Sigma=res$cov,
-          CI=res$confint,conf=conf,data=c(substitute(Xdata),substitute(Ydata)),meth=meth)
+          CI=res$confint,conf=conf,data=c(substitute(Xdata),substitute(Ydata)),meth=meth,X=Xdatam,Y=Ydatam,w=res$w, outFlag=res$outFlag, ROK=res$ROK)
 }
 
 class(z) <- "FRBhot"
