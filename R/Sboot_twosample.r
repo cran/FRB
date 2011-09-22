@@ -1,4 +1,4 @@
-Sboot_twosample <-function(X, groups, R, ests=Sest_twosample(X,groups))
+Sboot_twosample <-function(X, groups, R=999, ests=Sest_twosample(X,groups))
 {
 # Robust bootstrap for two populations S-estimator
 # INPUT:
@@ -93,8 +93,8 @@ p <- ncol(X)
 
 n1 <- sum(groups==1)
 n2 <- sum(groups==2)
-X1 <- X[groups==1,]     
-X2 <- X[groups==2,]
+X1 <- X[groups==1,,drop=FALSE]     
+X2 <- X[groups==2,,drop=FALSE]
 dimens <- 2*p+p*p
 
 Ip <- diag(p)
@@ -245,7 +245,7 @@ bootbiasmat <- matrix(0,dimens,R)
 bootbiaszc <- matrix(0,dimens,R) 
 
 for (r in 1:R) {
-    X1st <- X1[bootmatrix1[,r],]
+    X1st <- X1[bootmatrix1[,r],,drop=FALSE]
     Resi1st <- X1st - matrix(rep(mu1,n1), n1, byrow=TRUE)
     divec1st <- sqrt(mahalanobis(Resi1st, rep(0,p), Sigma))
     divec1st[divec1st<1e-5] <- 1e-5
@@ -254,7 +254,7 @@ for (r in 1:R) {
 
     wwdivec1st <- rhobiweightder1(divec1st,c)*divec1st - rhobiweight(divec1st,c)   
 
-    X2st <- X2[bootmatrix2[,r],]
+    X2st <- X2[bootmatrix2[,r],,drop=FALSE]
     Resi2st <- X2st -matrix(rep(mu2,n2), n2, byrow=TRUE) 
     divec2st <- sqrt(mahalanobis(Resi2st, rep(0,p), Sigma))
     divec2st[divec2st<1e-5] <- 1e-5

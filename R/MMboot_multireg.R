@@ -1,6 +1,6 @@
-MMboot_multireg <- function(X, Y, R, conf=0.95, ests = MMest_multireg(X, Y))
+MMboot_multireg <- function(X, Y, R=999, conf=0.95, ests = MMest_multireg(X, Y))
 {
-# robust bootstrap for multivariate MM regression 
+# robust bootstrap for multivariate MM regression
 # INPUT:
 #   Y : n x q response matrix
 #   X : n x p covariates matrix (ones(n,1) for location/shape estimation)
@@ -145,7 +145,9 @@ pvalueCI_BCA <- function(sorted, estim, infl, conf)
 Y <- as.matrix(Y)
 X <- as.matrix(X)
 n <- nrow(X)
+if (nrow(ests$coefficients)>ncol(X)) X <- cbind(rep(1,n),X)
 p <- ncol(X)
+
 q <- ncol(Y)
 dimens <- p*q + q*q
 
@@ -156,7 +158,7 @@ c0 <- ests$c0
 b <- ests$b
 c1 <- ests$c1
 
-MMBeta <- ests$Beta
+MMBeta <- ests$coefficients
 MMSigma <- ests$Sigma
 Beta0 <- ests$SBeta
 Sigma0 <- ests$SSigma
@@ -410,11 +412,11 @@ if (ROK>1) {
 
   # compute bootstrap estimates of standard error
   MMSEs <- sqrt(apply(bootbiasmat, 1, var))
-  
+  MMcov <- var(t(bootbiasmat))
   # sort bootstrap recalculations for constructing intervals
   sortedMMest <- t(apply(bootbiasmat, 1, sort))
   
-  # empirical inlfuences for computing a in BCa intervals, based on IF(MM)
+  # empirical influences for computing a in BCa intervals, based on IF(MM)
   Einf <- MMeinfs_multireg(X, Y, ests=ests)
   inflE <- cbind(Einf$Beta, Einf$shape, Einf$covS, Einf$BetaS)  
   
@@ -442,6 +444,7 @@ else
   warning("Too many bootstrap samples discarded; FRB is cancelled")
   bootbiasmat <- NULL
   MMSEs <- NULL
+  MMcov=NULL
   estCIbca <- NULL
   estCIbasic <- NULL
   pvaluebca <- NULL
@@ -450,7 +453,9 @@ else
 
 #############################################################################
 
-return(list(centered=bootbiasmat, vecest=vecestim, SE=MMSEs, CI.bca=estCIbca, CI.basic=estCIbasic, p.bca=pvaluebca, p.basic=pvaluebasic, ROK=ROK))
+return(list(centered=bootbiasmat, vecest=vecestim, SE=MMSEs, cov=MMcov, 
+CI.bca=estCIbca, CI.basic=estCIbasic, p.bca=pvaluebca, p.basic=pvaluebasic, 
+ROK=ROK))
 
 }
 

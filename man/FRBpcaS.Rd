@@ -1,5 +1,7 @@
 \name{FRBpcaS}
 \alias{FRBpcaS}
+\alias{FRBpcaS.default}
+\alias{FRBpcaS.formula}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ PCA based on Multivariate S-estimators with Fast and Robust Bootstrap }
 \description{
@@ -7,24 +9,28 @@
   method to compute inference measures such as standard errors and confidence intervals. 
 }
 \usage{
-FRBpcaS(Y, R = 999, bdp = 0.5, conf = 0.95, control=Scontrol(...), ...)
+\method{FRBpcaS}{formula}(formula, data=NULL, ...)
+
+\method{FRBpcaS}{default}(Y, R = 999, bdp = 0.5, conf = 0.95, control=Scontrol(...),
+na.action=na.omit, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{ matrix or data frame }
-  \item{R}{ number of bootstrap samples }
-  \item{bdp}{ required breakdown point for the S-estimates. Should have \eqn{0 < } \code{bdp} \eqn{\le 0.5}, the default is 0.5 }
-  \item{conf}{level of the bootstrap confidence intervals. Default is \code{conf=0.95} }
+  \item{formula}{ an object of class \code{\link{formula}}; a symbolic description of the model to be fit.}
+  \item{data}{ data frame from which variables specified in formula are to be taken.}
+  \item{Y}{ matrix or data frame. }
+  \item{R}{ number of bootstrap samples. Default is \code{R=999}. }
+  \item{bdp}{ required breakdown point for the S-estimates. Should have \eqn{0 < } \code{bdp} \eqn{\le 0.5}, the default is 0.5. }
+  \item{conf}{level of the bootstrap confidence intervals. Default is \code{conf=0.95}. }
   \item{control}{a list with control parameters for tuning the computing algorithm, see \code{\link{Scontrol}}().}
-  \item{...}{allows for specifying control parameters directly instead of via \code{control}}
+  \item{na.action}{ a function which indicates what should happen when the data contain NAs. Defaults to \code{\link{na.omit}}.}
+  \item{...}{allows for specifying control parameters directly instead of via \code{control}.}
 }
 \details{                                     
   Multivariate S-estimates were introduced by Davies (1987) and can be highly robust while enjoying a reasonable Gaussian efficiency.
   The loss function used here is Tukey's biweight. It will be tuned in order to achieve the required breakdown point \code{bdp} 
 (any value between 0 and 0.5). 
-  The S-estimate is computed by a call to \code{\link{Sest_loccov}}(), which performs the fast-S algorithm 
- (Salibian-Barrera and Yohai 2006), see \code{\link{Scontrol}} for its tuning parameters. 
- The result of this call is also returned as the value \code{est}.
+  The MM-estimates are computed by a call to the implementation of the fast-S algorithm (Salibian-Barrera and Yohai 2006) in the \pkg{rrcov} package of Todorov and Filzmoser (2009). \code{\link{Scontrol}} provides some adjustable tuning parameters regarding the algorithm. The result of this call is also returned as the value \code{est}.
   
   PCA is performed by computing the eigenvalues (\code{eigval}) and eigenvectors (\code{eigvec}) of the S-estimate of shape, which is a rescaled version of the
   S-estimate of covariance (rescaled to have determinant equal to 1). With \code{pvar} the function also provides the estimates for the percentage of 
@@ -55,7 +61,7 @@ FRBpcaS(Y, R = 999, bdp = 0.5, conf = 0.95, control=Scontrol(...), ...)
   \code{eigval} and \code{pvar}.
   }
 \value{
-  An object of class \code{FRBpca}, which is a list containing the following components:
+  An object of class \code{FRBpca}, which contains the following components:
 \item{shape}{(p x p) S-estimate of the shape matrix of \code{Y}}
 \item{eigval}{(p x 1) eigenvalues of S shape }
 \item{eigvec}{(p x p) eigenvectors of S-shape }
@@ -76,7 +82,7 @@ FRBpcaS(Y, R = 999, bdp = 0.5, conf = 0.95, control=Scontrol(...), ...)
 \item{eigvec.CI.basic}{(p*p x 2) basic bootstrap intervals for S eigenvectors (vectorized)}
 \item{pvar.CI.basic}{(p-1 x 2) basic bootstrap intervals for percentage of variance for S-eigenvalues }
 \item{pvar.CIone.basic}{(p-1 x 1) one-sided basic bootstrap intervals for percentage of variance for S-eigenvalues ([-infty upper]) }
-\item{est}{(list) result of \code{\link{Sest_loccov}}() }
+\item{est}{list containing the S-estimates of location and scatter }
 \item{bootest}{(list) result of \code{\link{Sboot_loccov}}() }
 \item{failedsamples}{number of bootstrap samples with non-positive definiteness of shape }
 \item{conf}{ a copy of the \code{conf} argument}
@@ -88,30 +94,33 @@ FRBpcaS(Y, R = 999, bdp = 0.5, conf = 0.95, control=Scontrol(...), ...)
 }
 \references{
 \itemize{
-\item P.L. Davies (1987). Asymptotic behavior of S-estimates of multivariate location parameters and dispersion
+\item P.L. Davies (1987) Asymptotic behavior of S-estimates of multivariate location parameters and dispersion
 matrices. \emph{The Annals of Statistics}, \bold{15}, 1269-1292.
-\item A.C. Davison and D.V. Hinkley (1997). \emph{Bootstrap Methods and their Application}. Cambridge Series in
+\item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. Cambridge Series in
 Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2006). PCA based on multivariate MM-estimators
+\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2006) PCA based on multivariate MM-estimators
 with fast and robust bootstrap. \emph{Journal of the American Statistical Association}, \bold{101}, 1198-1211.
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
 regression. \emph{The Annals of Statistics}, \bold{30}, 556-582. 
+\item V. Todorov and P. Filzmoser (2009) An Object-Oriented Framework for Robust Multivariate Analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
 }
 }
-\author{ Gert Willems and Ella Roelant }
+\author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
 %\note{ ~~further notes~~ 
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
 \seealso{ \code{\link{plot.FRBpca}}, \code{\link{summary.FRBpca}}, \code{\link{print.FRBpca}}, \code{\link{FRBpcaMM}}, 
-\code{\link{Sest_loccov}}, \code{\link{Sboot_loccov}}, \code{\link{Scontrol}} }
+\code{\link{Sboot_loccov}}, \code{\link{Scontrol}} }
 \examples{
  
 data(ForgedBankNotes)
 
 Spcares <- FRBpcaS(ForgedBankNotes, R=999, bdp=0.25, conf=0.95)
+# or using the formula interface
+Spcares <- FRBpcaMM(~.,data=ForgedBankNotes, R=999, conf=0.95)
 
 # the simple print method shows the standard deviations with confidence limits:
 Spcares

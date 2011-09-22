@@ -1,14 +1,21 @@
-summary.FRBmultireg <- function(object, confmethod = c("BCA","basic","both"), digits=3, ...) {
+summary.FRBmultireg <- function(object, confmethod = c("BCA","basic","both"), 
+digits=3, print.CI=FALSE, sep="", ...) {
 
 confmethod <- match.arg(confmethod)
-
-estBeta <- object$Beta
+estBeta <- object$coefficients
 q <- ncol(estBeta)
 p <- nrow(estBeta)
-responses <- colnames(estBeta)
-covariates <- rownames(estBeta)
+responses <- colnames(as.data.frame(estBeta))
+covariates <- rownames(as.data.frame(estBeta))
 
-if (!is.null(object$bootest))  {
+res=object[c("call", "coefficients","residuals","scale","Sigma",
+            "weights", "df", "method", "control")]
+res$responses=responses
+res$covariates=covariates
+res$digits=digits
+
+if (is.null(object$bootest))  res$Beta=estBeta
+else{
   leftbr <- rep("(", p)
   rightbr <- rep(")", p)
   Betawstd <- as.data.frame(list(estBeta[,1], leftbr, object$SE[,1], rightbr))
@@ -22,7 +29,7 @@ if (!is.null(object$bootest))  {
   colnames(Betawstd)[3+(0:(q-1))*4] <- " "
   colnames(Betawstd)[4+(0:(q-1))*4] <- " "
   
-  separator <- rep("|", p)
+  separator <- rep(sep, p)
   sigcodes.bca <- matrix(rep("",p*q), ncol=q)
   sigcodes.bca[object$p.bca<0.1] <- "."  
   sigcodes.bca[object$p.bca<0.05] <- "*"  
@@ -40,15 +47,10 @@ if (!is.null(object$bootest))  {
 #      limits <- cbind(object$CI.bca.lower[,i], object$CI.bca.upper[,i])
 #      rownames(limits) <- rownames(estBeta)
 #      colnames(limits) <- c("lower", "upper")
-      BetaTable <- as.data.frame(list(estBeta[,i], separator, object$SE[,i], separator, object$CI.bca.lower[,i], object$CI.bca.upper[,i], separator, object$p.bca[,i], sigcodes.bca[,i]))
-      colnames(BetaTable) <- c("Estimate", " ", "Std.Error", " ", "lower", "upper", " ", "p-value", " ")
-  
-#      significant <- sign(apply(limits,1,prod))
-#      starred <- rep("",p)
-#      starred[significant==1] <- "*"
-#      limits <- as.data.frame(list(limits, starred))
-#      colnames(limits)[3] <- " "
-      
+      if (print.CI) {BetaTable <- as.data.frame(list(estBeta[,i,drop=FALSE], separator, object$SE[,i], separator, object$CI.bca.lower[,i], object$CI.bca.upper[,i], separator, object$p.bca[,i], sigcodes.bca[,i]))
+      colnames(BetaTable) <- c("Estimate", " ", "Std.Error", " ", "lower", "upper", " ", "p-value", " ")}
+      else {BetaTable <- as.data.frame(list(estBeta[,i,drop=FALSE], separator, object$SE[,i], separator, object$p.bca[,i], sigcodes.bca[,i]))
+      colnames(BetaTable) <- c("Estimate", " ", "Std.Error", " ", "p-value", " ")}
       llist.bca[[responses[i]]] <- BetaTable
     }
   }
@@ -56,33 +58,23 @@ if (!is.null(object$bootest))  {
     llist.basic <- list()
     for (i in 1:q) {
   
-#      limits <- cbind(object$CI.basic.lower[,i], object$CI.basic.upper[,i])
-#      rownames(limits) <- rownames(estBeta)
-#      colnames(limits) <- c("lower", "upper")
-
-      BetaTable <- as.data.frame(list(estBeta[,i], separator, object$SE[,i], separator, object$CI.basic.lower[,i], object$CI.basic.upper[,i], separator, object$p.basic[,i], sigcodes.basic[,i]))
-      colnames(BetaTable) <- c("Estimate", " ", "Std.Error", " ", "lower", "upper", " ", "p-value", " ")
- 
-#      significant <- sign(apply(limits,1,prod))
-#      starred <- rep("",p)
-#      starred[significant==1] <- "*"
-#      limits <- as.data.frame(list(limits, starred))
-#      colnames(limits)[3] <- " "
-  
+      if (print.CI) {BetaTable <- as.data.frame(list(estBeta[,i,drop=FALSE], separator, object$SE[,i], separator, object$CI.basic.lower[,i], object$CI.basic.upper[,i], separator, object$p.basic[,i], sigcodes.basic[,i]))
+      colnames(BetaTable) <- c("Estimate", " ", "Std.Error", " ", "lower", "upper", " ", "p-value", " ")}
+	else {BetaTable <- as.data.frame(list(estBeta[,i,drop=FALSE], separator, object$SE[,i], separator, object$p.basic[,i], sigcodes.basic[,i]))
+      colnames(BetaTable) <- c("Estimate", " ", "Std.Error", " ", "p-value", " ")} 
       llist.basic[[responses[i]]] <- BetaTable
     }
   }
+  res$Betawstd=Betawstd
+  res$conf=object$conf
+  res$print.CI=print.CI
 
-  
-  if (confmethod == "BCA")
-    res <- list(responses=responses, covariates=covariates, Betawstd=Betawstd, Sigma=object$Sigma, table.bca=llist.bca, method=object$method, conf=object$conf, digits=digits)
-  else if (confmethod == "basic")
-    res <- list(responses=responses, covariates=covariates, Betawstd=Betawstd, Sigma=object$Sigma, table.basic=llist.basic, method=object$method, conf=object$conf, digits=digits)
+  if (confmethod == "BCA") res$table.bca=llist.bca
+  else if (confmethod == "basic") res$table.basic=llist.basic
   else
-    res <- list(responses=responses, covariates=covariates, Betawstd=Betawstd, Sigma=object$Sigma, table.bca=llist.bca, table.basic=llist.basic, method=object$method, conf=object$conf, digits=digits)
+    {res$table.bca=llist.bca 
+    res$table.basic=llist.basic}
 }
-else
-    res <- list(responses=responses, covariates=covariates, Beta=estBeta, Sigma=object$Sigma, method=object$method, digits=digits)
 
 class(res) <- "summary.FRBmultireg"
 
@@ -95,44 +87,77 @@ res
 print.summary.FRBmultireg <- function(x, ...) {
 
 if (x$method$est=="MM")
-cat(paste("Multivariate regression based on MM-estimates (bdp = ", x$method$bdp, ", eff = ", x$method$eff, ")", sep=""), "\n\n")
+cat(paste("\nMultivariate regression based on MM-estimates (bdp = ", x$method$bdp, ", eff = ", x$method$eff, ")", sep=""), "\n")
 else
-cat(paste("Multivariate regression based on ", x$method$est, "-estimates (breakdown point = ", x$method$bdp, ")", sep=""), "\n\n")
+cat(paste("\nMultivariate regression based on ", x$method$est, "-estimates (breakdown point = ", x$method$bdp, ")", sep=""), "\n")
+cat("\n")
+ if (!is.null(x$call)) 
+  cat("Call:\n", deparse(x$call), "\n", sep = "",collapse = "\n") 
+  print.CI=x$print.CI
+  resid <- x$residuals
+  digits=x$digits	
+  if (x$df > 5) {
+        nam <- c("Min", "1Q", "Median", "3Q", "Max")
+        if (NROW(resid) > 1) 
+            rq <- structure(apply(resid, 2, quantile), dimnames = list(nam, 
+                dimnames(resid)[[2]]))
+        else rq <- structure(apply(resid, 1, quantile), dimnames = list(nam, 
+                dimnames(resid)[[1]]))
+      rq=t(rq)	
+   }
+   else {
+       if (NROW(resid) > 1) rq=t(resid)
+       else rq=resid
+   }  
 
-cat("Response variables: ", x$responses, "\n")
-cat("Covariates: ", x$covariates, "\n\n")
+#if (!is.null(x$Betawstd)) {
+#  cat("Coefficient estimates (with bootstrap standard errors):\n")
+#  print(x$Betawstd, digits=x$digits)
+#} 
+#else {
+#  cat("Coefficient estimates):\n")
+#  print(x$coefficients, digits=x$digits)
+#} 
+#for (i in 1:length(x$table.bca))
+for (i in 1:NROW(rq))
+{ 
+      if (NROW(rq)>1) cat("\nResponse ", x$responses[i], ":\n\n", sep="")
+      cat(if (!is.null(x$weights) && diff(range(x$weights))) 
+        "Residuals:\n", sep = "")
+      print(rq[i,], digits = digits, ...)
+	cat("\n")	
+      cat("Coefficients:\n")
+	if (!is.null(x$table.bca)) 
+	{
+	print(x$table.bca[[x$responses[i]]], digits = x$digits)
+      cat("---\n") 
+      cat("Signif. codes:  0 \'***\' 0.001 \'**\' 0.01 \'*\' 0.05 \'.\' 0.1 \' \' 1\n\n")
+    	if (print.CI) cat("Confidence limits (",x$conf*100, "%) and p-values based on BCA method!\n\n", sep="")
+      else cat("p-values based on BCA method!\n\n", sep="")
+	}
 
-if (!is.null(x$Betawstd)) {
-  cat("Coefficient estimates (with bootstrap standard errors):\n")
-  print(x$Betawstd, digits=x$digits)
+	if (!is.null(x$table.basic)) 
+	{
+      print(x$table.basic[[x$responses[i]]], digits = x$digits)
+      cat("---\n") 
+      cat("Signif. codes:  0 \'***\' 0.001 \'**\' 0.01 \'*\' 0.05 \'.\' 0.1 \' \' 1\n\n")
+      if (print.CI) cat("Confidence limits (",x$conf*100, "%) and p-values based on Basic Bootstrap!\n\n", sep="")  
+	else cat("p-values based on Basic Bootstrap!\n\n", sep="")  
+  	}
+	if (is.null(x$table.bca) && is.null(x$table.basic))
+	{
+#  	cat("Coefficient estimates:\n")
+      estim=x$coefficients[,i,drop=FALSE]
+      colnames(estim)="Estimate"
+	print(estim, digits=x$digits)
+      cat("\n\n")
+	}
 } 
-else {
-  cat("Coefficient estimates):\n")
-  print(x$Beta, digits=x$digits)
-} 
+
+cat(paste("Robust residual scale:",format(signif(x$scale,digits)),"\n"))
+
 cat("\nError covariance matrix estimate:\n")
-print(x$Sigma, digits=x$digits)
-if (!is.null(x$table.bca)) {
-    cat("\nConfidence limits (",x$conf*100, "%) and p-values based on BCA method:\n", sep="")
-    for (i in 1:length(x$table.bca)) {
-    #cat("\n", x$conf*100, "% BCa confidence limits for response \"", x$responses[i], "\":\n\n", sep="")
-    cat("\n-response \"", x$responses[i], "\":\n", sep="")
-    
-    print(x$table.bca[[x$responses[i]]], digits = x$digits)
-  }
-}
-
-if (!is.null(x$table.basic)) {
-    cat("\nConfidence limits (",x$conf*100, "%) and p-values based on Basic Bootstrap:\n", sep="")  
-    for (i in 1:length(x$table.basic)) {
-    #cat("\n", x$conf*100, "% \"basic bootstrap\" confidence limits for response \"", x$responses[i], "\":\n\n", sep="")
-    cat("\n-response \"", x$responses[i], "\":\n", sep="")
-    
-    print(x$table.basic[[x$responses[i]]], digits = x$digits)
-  }
-}
-cat("\nSignif. codes:  0 \"***\" 0.001 \"**\" 0.01 \"*\" 0.05 \".\" 0.1 \" \" 1\n")
-
+print(as.data.frame(x$Sigma), digits=x$digits)
 }
 
 ###############################################################################
@@ -140,40 +165,40 @@ cat("\nSignif. codes:  0 \"***\" 0.001 \"**\" 0.01 \"*\" 0.05 \".\" 0.1 \" \" 1\
 print.FRBmultireg <- function(x, digits=3, ...) {
 
 
-estBeta <- x$Beta
+estBeta <- x$coefficients
 q <- ncol(estBeta)
 p <- nrow(estBeta)
 
-if (!is.null(x$bootest))  {
-  leftbr <- rep("(", p)
-  rightbr <- rep(")", p)
-  Betawstd <- as.data.frame(list(estBeta[,1], leftbr, x$SE[,1], rightbr))
-  if (q>1) {
-    for (i in 2:q) {
-        Betawstd <- as.data.frame(list(Betawstd, estBeta[,i], leftbr, x$SE[,i], rightbr))
-    }
-  }
-  colnames(Betawstd)[1+(0:(q-1))*4] <- colnames(estBeta)
-  colnames(Betawstd)[2+(0:(q-1))*4] <- " "
-  colnames(Betawstd)[3+(0:(q-1))*4] <- " "
-  colnames(Betawstd)[4+(0:(q-1))*4] <- " "
-  
-  if (x$method$est=="MM")
-  cat(paste("Multivariate regression based on multivariate MM-estimates (bdp = ", x$method$bdp, ", eff = ", x$method$eff, ")", sep=""), "\n\n")
+ if (x$method$est=="MM")
+  cat(paste("\nMultivariate regression based on multivariate MM-estimates (bdp = ", x$method$bdp, ", eff = ", x$method$eff, ")", sep=""), "\n")
   else
-  cat(paste("Multivariate regression based on multivariate ", x$method$est, "-estimates (breakdown point = ", x$method$bdp, ")", sep=""), "\n\n")
+  cat(paste("\nMultivariate regression based on multivariate ", x$method$est, "-estimates (breakdown point = ", x$method$bdp, ")", sep=""), "\n")
 
-  cat("Coefficient estimates (with bootstrap standard errors):\n")
-  print(Betawstd, digits=digits)
-}
-else {
-  if (x$method$est=="MM")
-  cat(paste("Multivariate regression based on multivariate MM-estimates (bdp = ", x$method$bdp, ", eff = ", x$method$eff, ")", sep=""), "\n\n")
-  else
-  cat(paste("Multivariate regression based on multivariate ", x$method$est, "-estimates (breakdown point = ", x$method$bdp, ")", sep=""), "\n\n")
-  
-  cat("Coefficient estimates:\n")
-  print(estBeta, digits=digits)
-}
+ if (!is.null(x$call)) 
+  cat("\nCall:\n", deparse(x$call), "\n", sep = "")
+  cat("\n") 
+  cat("Coefficients:\n")
+  if (q==1) print(t(estBeta)[1,,drop=FALSE], digits=digits)
+  else print(estBeta, digits=digits)
 
 }
+
+###############################################################################
+
+predict.FRBmultireg <- function (object, newdata, ...) 
+{
+    class(object) <- c(class(object), "mlm")
+    object$qr <- qr(sqrt(object$weights) * object$X)
+    object$rank <- object$qr$rank
+    pred=predict.mlm(object, newdata = newdata, ...)
+    if(ncol(pred)==1) pred=t(pred)
+    pred
+}
+
+vcov.FRBmultireg <- function (object, ...) 
+{
+    if(!is.null(object$cov)) object$cov
+    else cat("Not yet implemented\n")	 
+}
+
+

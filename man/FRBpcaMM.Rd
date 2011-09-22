@@ -1,5 +1,7 @@
 \name{FRBpcaMM}
 \alias{FRBpcaMM}
+\alias{FRBpcaMM.default}
+\alias{FRBpcaMM.formula}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ PCA based on Multivariate MM-estimators with Fast and Robust Bootstrap }
 \description{
@@ -7,28 +9,32 @@
   method to compute inference measures such as standard errors and confidence intervals. 
 }
 \usage{
-FRBpcaMM(Y, R = 999, conf = 0.95, control=MMcontrol(...), ...)
+\method{FRBpcaMM}{formula}(formula, data=NULL, ...)
+
+
+\method{FRBpcaMM}{default}(Y, R = 999, conf = 0.95, control=MMcontrol(...),
+na.action=na.omit, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{ matrix or data frame }
-  \item{R}{ number of bootstrap samples }
-  \item{conf}{ level of the bootstrap confidence intervals. Default is \code{conf=0.95} }
+  \item{formula}{ an object of class \code{\link{formula}}; a symbolic description of the model to be fit.}
+  \item{data}{ data frame from which variables specified in formula are to be taken.}
+  \item{Y}{ matrix or data frame. }
+  \item{R}{ number of bootstrap samples. Default is \code{R=999}. }
+  \item{conf}{ level of the bootstrap confidence intervals. Default is \code{conf=0.95}. }
   \item{control}{a list with control parameters for tuning the MM-estimate and its computing algorithm, 
   see \code{\link{MMcontrol}}().}
-\item{...}{allows for specifying control parameters directly instead of via \code{control}}
+  \item{na.action}{ a function which indicates what should happen when the data contain NAs. Defaults to \code{\link{na.omit}}.}  
+\item{...}{allows for specifying control parameters directly instead of via \code{control}.}
 }
 \details{
   Multivariate MM-estimates are defined by first computing an S-estimate of location and covariance, then fixing its scale component and 
   re-estimating the location and the shape by a more efficient M-estimate, see Tatsuoka and Tyler (2000). Tukey's biweight is used for 
   the loss functions. By default, the first loss function (in the S-estimate) is tuned in order to obtain 50\% breakdown point. 
   The default tuning of the second loss function (M-estimate) ensures 95\% efficiency for the shape matrix estimate at the normal model.
-  This tuning is recommended but can be changed through argument \code{control} if desired. (However, control parameter 
-  \code{shapeEff} will always be considered as \code{TRUE} by this function, whichever value is specified.)
-
-  The MM-estimate is computed by a call to \code{\link{MMest_loccov}}(), the result of which is returned as \code{est}.
-  This function first performs the fast-S algorithm (see \code{\link{Sest_loccov}}) and does the M-part by reweighted least 
-  squares iteration. See \code{\link{MMcontrol}} for some adjustable tuning parameters regarding the algorithm.
+  The desired efficiency can be changed through argument \code{control}. (However, control parameter 
+  \code{shapeEff} will always be considered as \code{TRUE} by this function, whichever value is specified.) The MM-estimates are computed by a call to the implementation in the \pkg{rrcov} package of Todorov and Filzmoser (2009). %\code{\link{MMcontrol}} provides some adjustable tuning parameters regarding the algorithm. 
+The result of this call is also returned as the value \code{est}.
   
   PCA is performed by computing the eigenvalues (\code{eigval}) and eigenvectors (\code{eigvec}) of the MM-estimate of shape, which is a rescaled version of the
   MM-estimate of covariance (rescaled to have determinant equal to 1). With \code{pvar} the function also provides the estimates for the percentage of 
@@ -57,7 +63,7 @@ FRBpcaMM(Y, R = 999, conf = 0.95, control=MMcontrol(...), ...)
    for the smallest eigenvalues in \code{eigval} and \code{pvar}).
   }
 \value{
-  An object of class \code{FRBpca}, which is a list containing the following components:
+  An object of class \code{FRBpca}, which contains the following components:
 \item{shape}{(p x p) MM-estimate of the shape matrix of \code{Y}}
 \item{eigval}{(p x 1) eigenvalues of MM shape }
 \item{eigvec}{(p x p) eigenvectors of MM-shape }
@@ -78,7 +84,7 @@ FRBpcaMM(Y, R = 999, conf = 0.95, control=MMcontrol(...), ...)
 \item{eigvec.CI.basic}{(p*p x 2) basic bootstrap intervals for MM eigenvectors (vectorized)}
 \item{pvar.CI.basic}{(p-1 x 2) basic bootstrap intervals for percentage of variance for MM-eigenvalues }
 \item{pvar.CIone.basic}{(p-1 x 1) one-sided basic bootstrap intervals for percentage of variance for MM-eigenvalues ([-infty upper]) }
-\item{est}{(list) result of \code{\link{MMest_loccov}}() }
+\item{est}{list containing the MM-estimates of location and scatter}
 \item{bootest}{(list) result of \code{\link{MMboot_loccov}}() }
 \item{failedsamples}{number of bootstrap samples with non-positive definiteness of shape }
 \item{conf}{ a copy of the \code{conf} argument}
@@ -90,30 +96,33 @@ FRBpcaMM(Y, R = 999, conf = 0.95, control=MMcontrol(...), ...)
 }
 \references{ 
 \itemize{
-\item A.C. Davison and D.V. Hinkley (1997). \emph{Bootstrap Methods and their Application}. Cambridge Series in
+\item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. Cambridge Series in
 Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2006). PCA based on multivariate MM-estimators
+\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2006) PCA based on multivariate MM-estimators
 with fast and robust bootstrap. \emph{Journal of the American Statistical Association}, \bold{101}, 1198-1211.
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
 regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
-\item K.S. Tatsuoka and D.E. Tyler (2000). The uniqueness of S and M-functionals under non-elliptical distributions.
+\item K.S. Tatsuoka and D.E. Tyler (2000) The uniqueness of S and M-functionals under non-elliptical distributions.
 \emph{The Annals of Statistics}, \bold{28}, 1219-1243
+\item V. Todorov and P. Filzmoser (2009) An Object-Oriented Framework for Robust Multivariate Analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
 }
 }
-\author{ Gert Willems and Ella Roelant }
+\author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
 %\note{ ~~further notes~~ 
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
 \seealso{\code{\link{plot.FRBpca}}, \code{\link{summary.FRBpca}}, \code{\link{print.FRBpca}}, \code{\link{FRBpcaS}}, 
-\code{\link{MMest_loccov}}, \code{\link{MMboot_loccov}}, \code{\link{MMcontrol}} }
+\code{\link{MMboot_loccov}}, \code{\link{MMcontrol}} }
 \examples{
 
 data(ForgedBankNotes)
 
 MMpcares <- FRBpcaMM(ForgedBankNotes, R=999, conf=0.95)
+# or using the formula interface
+MMpcares <- FRBpcaMM(~.,data=ForgedBankNotes, R=999, conf=0.95)
 
 # the simple print method shows the standard deviations with confidence limits:
 MMpcares

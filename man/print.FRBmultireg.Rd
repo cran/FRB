@@ -10,22 +10,18 @@
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{ an \R object of class \code{FRBmultireg}, typically created by \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}} or \code{\link{FRBmultiregGS}} }
+  \item{x}{ an \R object of class \code{FRBmultireg}, typically created by \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}} or \code{\link{FRBmultiregGS}} or by \code{\link{GSest_multireg}}, \code{\link{MMest_multireg}} or \code{\link{Sest_multireg}} }
   \item{digits}{ number of digits for printing (defaulting to 3) }
   \item{\dots}{ potentially more arguments }
 }
 \details{
-  The print method for \code{FRBmultireg} displays the estimated coefficients of the multivariate linear regression model, 
-  with corresponding standard errors based on Fast and Robust Bootstrap. 
+  The print method for \code{FRBmultireg} displays the estimated coefficients of the multivariate linear regression model. 
 }
-\author{ Gert Willems and Ella Roelant }
-\seealso{\code{\link{summary.FRBmultireg}}, \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}}, \code{\link{FRBmultiregGS}} }
+\author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
+\seealso{\code{\link{summary.FRBmultireg}}, \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}}, \code{\link{FRBmultiregGS}}, \code{\link{GSest_multireg}}, \code{\link{MMest_multireg}}, \code{\link{Sest_multireg}} }
 \examples{
 data(schooldata)
-school.x <- data.matrix(schooldata[,1:5])
-school.y <- data.matrix(schooldata[,6:8])
-
-MMres <- FRBmultiregMM(school.x, school.y, R=999, conf = 0.99)
+MMres <- FRBmultiregMM(cbind(reading,mathematics,selfesteem)~., data=schooldata)
 
 MMres # -> print.FRBmultireg() method
 

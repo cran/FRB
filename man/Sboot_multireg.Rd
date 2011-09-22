@@ -7,15 +7,15 @@ Calculates bootstrapped S-estimates of multivariate regression and corresponding
 method. 
 }
 \usage{
-Sboot_multireg(X, Y, R, conf=0.95, ests = Sest_multireg(X, Y))
+Sboot_multireg(X, Y, R = 999, conf=0.95, ests = Sest_multireg(X, Y))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{X}{ a matrix or data frame containing the explanatory variables (possibly including intercept). }
   \item{Y}{ a matrix or data frame containing the response variables. }
-  \item{R}{ number of bootstrap samples }
-  \item{conf}{ level of the bootstrap confidence intervals. Default is \code{conf=0.95} }
-  \item{ests}{ S-estimates as returned by \code{\link{Sest_multireg}}() }
+  \item{R}{ number of bootstrap samples. Default is \code{R=999}. }
+  \item{conf}{ level of the bootstrap confidence intervals. Default is \code{conf=0.95}. }
+  \item{ests}{ S-estimates as returned by \code{\link{Sest_multireg}}(). }
 }
 \details{
 Called by \code{\link{FRBmultiregS}} and typically not to
@@ -23,7 +23,7 @@ be used on its own. It requires the result of \code{\link{Sest_multireg}} applie
 supplied through the argument \code{ests}. If \code{ests} is not provided, \code{\link{Sest_multireg}} 
 will be called with default arguments. 
 
-The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators. 
+The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators and extended to multivariate regression by Van Aelst and Willems (2005).
 
 The value \code{centered} gives a matrix with \code{R} columns and \eqn{p*q+q*q} rows (\eqn{p} is the number of explanatory variables 
 and \eqn{q} the number of response variables), 
@@ -48,6 +48,7 @@ Bootstrap samples which contain less than \eqn{p} distinct observations with pos
              where the recalculations are centered by original estimates (see Details) }
   \item{vecest }{a vector containing the original estimates (see Details)}
   \item{SE }{bootstrap standard errors for the estimates in \code{vecest}}
+  \item{cov}{ bootstrap covariance matrix for the estimates in \code{vecest}} 
   \item{CI.bca }{a matrix containing bias corrected and accelerated confidence intervals corresponding to the 
   estimates in \code{vecest} (first column are lower limits, second column are upper limits)}
   \item{CI.basic }{ a matrix containing basic bootstrap intervals corresponding to the 
@@ -63,14 +64,14 @@ Bootstrap samples which contain less than \eqn{p} distinct observations with pos
 \itemize{
 \item A.C. Davison, D.V. Hinkley (1997) Bootstrap methods and their application. Cambridge University Press.  
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
+bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
-\item  S. Van Aelst and G. Willems (2005). Multivariate regression S-estimators for robust estimation and
-inference. \emph{Statistica Sinica}, \bold{15}, 981-1001
+regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
+\item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
+inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
 }
 }
-\author{ Gert Willems and Ella Roelant }
+\author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
 %\note{ ~~further notes~~ 
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~

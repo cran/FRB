@@ -1,5 +1,67 @@
+Sest_multireg  <- function(X,...) UseMethod("Sest_multireg")
 
-Sest_multireg <- function(X, Y, bdp=.5, control=Scontrol(...), ...)
+Sest_multireg.formula <- function(formula, data=NULL, ...)
+{
+
+# --------------------------------------------------------------------
+
+# Returns response of formula in nice way
+
+model.multiregresp<-function (data, type = "any") 
+{
+    if (attr(attr(data, "terms"), "response")) {
+        if (is.list(data) | is.data.frame(data)) {
+  		v <- data[[1L]]
+		if (is.data.frame(data) && is.vector(v)) v <- data[,1L,drop=FALSE]
+            if (type == "numeric" && is.factor(v)) {
+                warning("using type=\"numeric\" with a factor response will be ignored")
+            }
+            else if (type == "numeric" | type == "double") 
+                storage.mode(v) <- "double"
+            else if (type != "any") 
+                stop("invalid response type")
+            if (is.matrix(v) && ncol(v) == 1L){ 
+                if (is.data.frame(data)) {v=data[,1L,drop=FALSE]}
+	          else {dim(v) <- NULL}}
+            rows <- attr(data, "row.names")
+            if (nrows <- length(rows)) {
+                if (length(v) == nrows) 
+                  names(v) <- rows
+                else if (length(dd <- dim(v)) == 2L) 
+                  if (dd[1L] == nrows && !length((dn <- dimnames(v))[[1L]])) 
+                    dimnames(v) <- list(rows, dn[[2L]])
+            }
+            return(v)
+        }
+        else stop("invalid 'data' argument")
+    }
+    else return(NULL)
+}
+
+
+    mt <- terms(formula, data = data)
+    if (attr(mt, "response") == 0L) stop("response is missing in formula")
+    mf <- match.call(expand.dots = FALSE)
+    mf$... <- NULL
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval.parent(mf)
+    miss <- attr(mf,"na.action")
+    Y <- model.multiregresp(mf)
+    Terms <- attr(mf, "terms")
+    X <- model.matrix(Terms, mf)
+    res <- Sest_multireg.default(X, Y, int = FALSE, ...)
+    res$terms <- Terms
+    cl <- match.call()
+    cl[[1L]] <- as.name("Sest_multireg")
+    res$call <- cl
+    res$xlevels <- .getXlevels(mt, mf)
+    if (!is.null(miss)) res$na.action <- miss
+    return(res)
+}                                                 
+
+
+
+Sest_multireg.default <- function(X, Y, int = TRUE, bdp=.5, control=Scontrol(...),na.action=na.omit, ...)
 {
 # fast S algorithm for multivariate regression estimation
 # INPUT:
@@ -215,17 +277,49 @@ return(exp(lgamma((p + a)
 #	       		end 'constant determining'				   #
 #--------------------------------------------------------------------------#
 
-#--------------------------------------------------------------------------  
-#--------------------------------------------------------------------------  
-#--------------------------------------------------------------------------  
+# --------------------------------------------------------------------
+# -                       main function                              -
+# --------------------------------------------------------------------
 
 #set.seed(10)   # seed can be set, but be careful in simulations then...
 
 Y <- as.matrix(Y)
+ynam=colnames(Y)
+q=ncol(na.action(Y))
+if (q < 1L) stop("at least one response needed")
 X <- as.matrix(X)
-n <- nrow(X)
-p <- ncol(X)
+xnam=colnames(X)
+if (nrow(Y) != nrow(X))stop("x and y must have the same number of observations")
+YX=na.action(cbind(Y,X))
+Y=YX[,1:q,drop=FALSE]
+X=YX[,-(1:q),drop=FALSE]
+n <- nrow(Y)
 m <- ncol(Y)
+p <- ncol(X)
+
+if (p < 1L) stop("at least one predictor needed")
+if (q < 1L) stop("at least one response needed")
+if (n < (p+q)) stop("For robust multivariate regression the number of observations cannot be smaller than the 
+total number of variables")
+
+interceptdetection <- apply(X==1, 2, all)
+interceptind <- (1:p)[interceptdetection==TRUE]
+if (!any(interceptdetection) & int){
+    X <- cbind(rep(1,n),X)
+    p <- p + 1    
+    interceptind <-1
+    if (!is.null(xnam)) colnames(X)[1] <- "(intercept)"
+}
+
+if (is.null(ynam))
+    colnames(Y) <- paste("Y",1:q,sep="")
+if (is.null(xnam)) {
+	colnames(X) <- paste("X",1:p,sep="")
+	if (interceptdetection || int){
+		colnames(X)[interceptind] <- "(intercept)"
+		colnames(X)[-interceptind] <- paste("X",1:(p-1),sep="")
+ 	}  
+}
 
 nsamp <- control$nsamp
 bestr <- control$bestr # number of best solutions to keep for further C-steps
@@ -241,15 +335,14 @@ bestbetas <- matrix(0, p*m, bestr)
 bestgammas <- matrix(0, m*m, bestr)
 bestscales <- 1e20 * rep(1,bestr)
 sworst <- 1e20
-
 while (loop <= nsamp) {
     # find a (p+m)-subset in general position.
     rankR <- 0
     itertest <- 0
     while ((rankR < m) && (itertest<200)) {
         ranset <- randomset(n,p+m)
-        Xj <- X[ranset,]
-        Yj <- Y[ranset,]
+        Xj <- X[ranset,,drop=FALSE]
+        Yj <- Y[ranset,,drop=FALSE]
     	  Bj <- solve(crossprod(Xj), crossprod(Xj,Yj))
         Rj <- Yj - Xj %*% Bj
 #	  qrXj <- qr(Xj)
@@ -302,13 +395,27 @@ for (i in bestr:1) {
         superbestgamma <- tmp$Gamma;
     }
 }
-Res <- Y-X%*%superbestbeta
+Fit <- X%*%superbestbeta
+Res <- Y-Fit
+method <- list(est="S", bdp=bdp)
 psres <- sqrt(mahalanobis(Res, rep(0,m), superbestgamma))/superbestscale
 w <- scaledpsibiweight(psres,c0)
 outFlag <- (psres > sqrt(qchisq(.975, m)))
+if(ncol(Res)==1) Res=t(Res)
+if(ncol(Fit)==1) Fit=t(Fit)
 
-return(list( Beta = superbestbeta, Gamma = superbestgamma, scale = superbestscale, 
-                    Sigma = superbestgamma*superbestscale^2, b=b, c=c0, w=w, outFlag=outFlag))
+z=list( #Beta = superbestbeta, 
+coefficients=superbestbeta, 
+residuals=Res,
+fitted.values=Fit,
+method=method,
+control=control,
+Gamma = superbestgamma, scale = superbestscale, 
+                    Sigma = superbestgamma*superbestscale^2, 
+df=n-(m*qr(X)$rank),X=X,Y=Y,
+b=b, c=c0, weights=w, outFlag=outFlag)
 
+class(z) <- c("FRBmultireg") 
+return(z)       
 }
 

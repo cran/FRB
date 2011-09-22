@@ -1,4 +1,80 @@
-FRBhotellingS <-function(Xdata,Ydata=NULL,mu0=0,R=999,bdp=0.5,conf=0.95,method=c("HeFung","pool"),control=Scontrol(...), ...)
+FRBhotellingS <-function(X,...) UseMethod("FRBhotellingS")
+
+FRBhotellingS.formula <-function(formula, data=NULL, ...)
+{
+
+# --------------------------------------------------------------------
+
+# Returns response of formula in nice way
+
+model.multiregresp<-function (data, type = "any") 
+{
+    if (attr(attr(data, "terms"), "response")) {
+        if (is.list(data) | is.data.frame(data)) {
+  		v <- data[[1L]]
+		if (is.data.frame(data) && is.vector(v)) v <- data[,1L,drop=FALSE]
+            if (type == "numeric" && is.factor(v)) {
+                warning("using type=\"numeric\" with a factor response will be ignored")
+            }
+            else if (type == "numeric" | type == "double") 
+                storage.mode(v) <- "double"
+            else if (type != "any") 
+                stop("invalid response type")
+            if (is.matrix(v) && ncol(v) == 1L){ 
+                if (is.data.frame(data)) {v=data[,1L,drop=FALSE]}
+	          else {dim(v) <- NULL}}
+            rows <- attr(data, "row.names")
+            if (nrows <- length(rows)) {
+                if (length(v) == nrows) 
+                  names(v) <- rows
+                else if (length(dd <- dim(v)) == 2L) 
+                  if (dd[1L] == nrows && !length((dn <- dimnames(v))[[1L]])) 
+                    dimnames(v) <- list(rows, dn[[2L]])
+            }
+            return(v)
+        }
+        else stop("invalid 'data' argument")
+    }
+    else return(NULL)
+}
+
+    mt <- terms(formula, data = data)
+    if (attr(mt, "response") == 0L) stop("response is missing in formula")
+    mf <- match.call(expand.dots = FALSE)
+    mf$... <- NULL
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval.parent(mf)
+    miss <- attr(mf,"na.action")
+#    X <- as.matrix(model.response(mf))
+     X <- model.multiregresp(mf)
+    Terms <- attr(mf, "terms")
+    Y <- model.matrix(Terms, mf)
+    Yint <- match("(Intercept)", colnames(Y), nomatch = 0L)
+    if (Yint > 0 && ncol(Y)==1)
+	{
+	x<-X
+	y<-NULL
+	}
+    else
+	{
+	if (Yint > 0) Y <- Y[, -Yint, drop = FALSE]
+	if (ncol(Y) > 1L) stop("too many predictors in formula")
+	Y<- as.factor(Y)
+      if (nlevels(Y) != 2) stop("predictor must have two levels")
+    	x <- X[which(Y==levels(Y)[1]),,drop=FALSE]
+	y <- X[which(Y==levels(Y)[2]),,drop=FALSE]
+     }
+	res <- FRBhotellingS.default(x, y, ...)
+    	res$terms <- Terms
+    	cl <- match.call()
+    	cl[[1L]] <- as.name("FRBhotellingS")
+    	res$call <- cl
+    	if (!is.null(miss)) res$na.action <- miss
+	return(res)
+}                                                 
+
+
+FRBhotellingS.default <-function(X,Y=NULL,mu0=0,R=999,bdp=0.5,conf=0.95,method=c("HeFung","pool"),control=Scontrol(...),na.action=na.omit, ...)
 {
 # performs robust Hotelling test based on multivariate S estimates 
 # with fast and robust bootstrap
@@ -135,7 +211,8 @@ testvectS <- c()
      estsigmabminsigmahat2<-estimates2[(p+1):dimens]
      estsigmab2<-estsigmabminsigmahat2+vecop(SSigma2)
      estsigmab2<-reconvec(estsigmab2,p)
-     if ((det(estsigmab1) >0) && (det(estsigmab2)>0)) {
+     if (is.finite(det(estsigmab1)) && is.finite(det(estsigmab2)) &&
+(det(estsigmab1) >0) && (det(estsigmab2)>0)) {
          estsigmaSP<-((n1-1)*estsigmab1+(n2-1)*estsigmab2)/(n1+n2-2)
          testvectSwaarde<-((n1*n2)/(n1+n2))*t(estmubminmuhat1-estmubminmuhat2)%*%solve(estsigmaSP)%*%(estmubminmuhat1-estmubminmuhat2)
          testvectS<-c(testvectS,testvectSwaarde)
@@ -151,7 +228,7 @@ for (i in 1:p) {
  		conf.int[1,i] <- Smu1[i]-Smu2[i]-sqrt(1/n*quantval*SSigmap[i,i])
 		conf.int[2,i] <- Smu1[i]-Smu2[i]+sqrt(1/n*quantval*SSigmap[i,i])
 }
-dimnames(conf.int) <- list(c("Lower bound","Upper bound"),dimnames(Xdata)[[2]]) 
+dimnames(conf.int) <- list(c("Lower bound","Upper bound"),dimnames(Xdata1)[[2]]) 
 rownames(Smu1) <- rownames(Smu2) <- ("   Estimate")
 
 return(list(teststat=teststatS,testvect=testvectS,pvalue=pvalue,loc1=Smu1,loc2=Smu2,cov=SSigmap,confint=conf.int,w=w,outFlag=outFlag,ROK=Rok))
@@ -191,7 +268,7 @@ for (r in 1:R) {
     estsigmabminsigmahatP <- estimates[(2*p+1):dimens]
     estsigmaSP <- estsigmabminsigmahatP+vecop(SSigmap)
     estsigmaSP <- reconvec(estsigmaSP,p)
-    if (det(estsigmaSP) >0) {
+    if (is.finite(det(estsigmaSP)) && (det(estsigmaSP)) >0) {
         testvectSwaarde <-((n1*n2)/(n1+n2))*t(estmubminmuhat1-estmubminmuhat2)%*%solve(estsigmaSP)%*%(estmubminmuhat1-estmubminmuhat2)
 
         testvectS<-c(testvectS,testvectSwaarde)
@@ -221,16 +298,25 @@ return(list(teststat=teststatS,testvect=testvectS,pvalue=pvalue,loc1=Smu1,loc2=S
 
 method <- match.arg(method)
 
-p <- ncol(Xdata)
-n <- nrow(Xdata)
+Xdatam <- as.matrix(X)
+Xdatam=na.action(Xdatam)
 
-Xdatam <- as.matrix(Xdata)
+p <- ncol(Xdatam)
+n <- nrow(Xdatam)
+
+if (p < 1L) stop("at least one variable needed")
+if (n < p) stop("For Hotelling tests the number of observations cannot be smaller than the 
+number of variables")
+
 if (is.null(colnames(Xdatam)))
     colnames(Xdatam) <- paste("V",1:p,sep="")
-if (is.null(Ydata)==TRUE)
+if (is.null(Y)==TRUE)
  {nrsamples <- 1}
 else
- {Ydatam <- as.matrix(Ydata)
+ {Ydatam <- as.matrix(Y)
+  Ydatam=na.action(Ydatam)
+  q <- ncol(Ydatam)
+  if (p != q) stop("For two-sample Hotelling test both samples must contain the same variables")
   if (is.null(colnames(Ydatam)))
     colnames(Ydatam) <- paste("V",1:p,sep="")
   nrsamples <- 2}
@@ -243,8 +329,14 @@ if (nrsamples ==1)
    {
    meth = paste("One sample Hotelling test based on multivariate S-estimates (breakdown point = ", bdp, ")", sep="")
    res=hottest1S(Xdatam,mu0=mu0,bdp=bdp,R=R,conf=conf,control=control)
-   z <- list(pvalue=res$pvalue,teststat=res$teststat,teststat.boot=res$testvect,Mu=res$loc,Sigma=res$cov,
-          CI=res$confint,Mu0=mu0,conf=conf,data=substitute(Xdata),meth=meth,X=Xdatam,w=res$w, outFlag=res$outFlag,ROK=res$ROK)
+   names(res$teststat)="T^2_R"
+   rownames(res$loc)="S-loc vector"
+   res$alt=paste("true mean vector is not equal to",
+   paste("(", paste(round(mu0, digits=3), collapse = ","), ")", sep = ""), "\n")
+   z <- list(p.value=res$pvalue,statistic=res$teststat,teststat.boot=res$testvect,
+   estimate=round(res$loc,digits=3),Sigma=res$cov,alternative=res$alt,
+   CI=res$confint,Mu0=mu0,conf=conf,data.name=deparse(substitute(X)),
+   method=meth,X=Xdatam,w=res$w,outFlag=res$outFlag,ROK=res$ROK)
    }
 else 
     {
@@ -258,12 +350,20 @@ else
           "(common covariance estimated by He and Fung method)", sep="")
       res=hottest2SHe(Xdatam,Ydatam,bdp=bdp,R=R,conf=conf,control=control)
     }
-    z <- list(pvalue=res$pvalue,teststat=res$teststat,teststat.boot=res$testvect,Mu1=res$loc1,Mu2=res$loc2,Sigma=res$cov,
-          CI=res$confint,conf=conf,data=c(substitute(Xdata),substitute(Ydata)),meth=meth,X=Xdatam,Y=Ydatam,w=res$w, outFlag=res$outFlag, ROK=res$ROK)
+   names(res$teststat)="T^2_R"
+   res$loc=rbind(res$loc1,res$loc2)
+   rownames(res$loc)=c("S-loc x-vector","S-loc y-vector")
+   res$alt=paste("true difference in mean vectors is not equal to",
+   paste("(", paste(round(mu0, digits=3), collapse = ","), ")", sep = ""), "\n")    
+   z <- list(p.value=res$pvalue,statistic=res$teststat,teststat.boot=res$testvect,
+   Mu1=res$loc1,Mu2=res$loc2,estimate=round(res$loc,digits=3),Sigma=res$cov,
+   alternative=res$alt,CI=res$confint,conf=conf,
+   data.name=paste(deparse(substitute(x)),"and",deparse(substitute(y))),
+   method=meth,X=Xdatam,Y=Ydatam,w=res$w,outFlag=res$outFlag,ROK=res$ROK)
 }
 
-class(z) <- "FRBhot"
-
+#class(z) <- "FRBhot"
+class(z)=c("htest","FRBhot")
 return(z)
 
 }  

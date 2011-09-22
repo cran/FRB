@@ -61,11 +61,12 @@ return(vecmat)
 
 X <- as.matrix(X)
 p<-ncol(X)
+int<-FALSE
 interceptdetection <- apply(X==1, 2, all)
+if (any(interceptdetection)) int<-TRUE
 zonderint <- (1:p)[interceptdetection==FALSE]
-Xzonderint <- X[,zonderint]
+Xzonderint <- X[,zonderint,drop=FALSE]
 X <- as.matrix(Xzonderint)
-
 
 n <- nrow(X)
 p <- ncol(X)
@@ -73,10 +74,10 @@ m <- ncol(Y)
 
 c <- ests$c
 b <- ests$b
-betawith <- ests$Beta
-beta <- betawith[2:(p+1),]
-Sigma <- ests$Sigma
+beta <- ests$coefficients
 
+if(nrow(beta)>p) beta <- beta[2:(p+1),,drop=FALSE]
+Sigma <- ests$Sigma
 
 resmat <- Y-X%*%beta
 

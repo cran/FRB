@@ -169,8 +169,8 @@ IRLSstep<-function(X, groups, initialmu1, initialmu2, initialGamma, initialscale
 n<-nrow(X)
 p<-ncol(X)
 
-X1 <- X[groups==1,]
-X2 <- X[groups==2,]
+X1 <- X[groups==1,,drop=FALSE]
+X2 <- X[groups==2,,drop=FALSE]
 n1 <- sum(groups==1)
 n2 <- sum(groups==2)
 
@@ -244,8 +244,8 @@ k <- control$k # number of C-steps on elemental starts
 convTol <- control$convTol
 maxIt <- control$maxIt
 
-X1 <- X[groups==1,]
-X2 <- X[groups==2,]
+X1 <- X[groups==1,,drop=FALSE]
+X2 <- X[groups==2,,drop=FALSE]
 n1 <- sum(groups==1)
 n2 <- sum(groups==2)
 
@@ -275,7 +275,7 @@ while (loop <= nsamp) {
         while (notOKsubsample && (trial<maxtrial)) {
             trial <- trial + 1
             ranset <- sample(n2,p+1)
-            X2j <- X2[ranset,]
+            X2j <- X2[ranset,,drop=FALSE]
             mu1j <- X1j 
             mu2j <- colMeans(X2j)
             Res1j <- X1j - matrix(rep(mu1j,n1j), n1j, byrow=TRUE)
@@ -294,7 +294,7 @@ while (loop <= nsamp) {
         while (notOKsubsample && (trial<maxtrial))  {
             trial <- trial + 1
             ranset <- sample(n1,p+1)
-            X1j <- X1[ranset,]
+            X1j <- X1[ranset,,drop=FALSE]
             mu2j <- X2j 
             mu1j <- colMeans(X1j)
             Res1j <- X1j - matrix(rep(mu1j,n1j), n1j, byrow=TRUE)
@@ -310,13 +310,13 @@ while (loop <= nsamp) {
         while (notOKsubsample && (trial<maxtrial))  {
             trial <- trial + 1
             ranset <- sample(n,p+2)
-            Xj <- X[ranset,]
+            Xj <- X[ranset,,drop=FALSE]
             groupsj <- groups[ranset]
             n2j <- sum(groupsj==2)
             if ((n2j>0) && (n2j<(p+2)))
                 {n1j <- p+2 - n2j
-                X1j <- Xj[groupsj==1,]
-                X2j <- Xj[groupsj==2,]
+                X1j <- Xj[groupsj==1,,drop=FALSE]
+                X2j <- Xj[groupsj==2,,drop=FALSE]
                 if (n1j>1) 
 			             {mu1j <- colMeans(X1j)} 
                 else 

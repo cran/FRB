@@ -65,7 +65,7 @@ p <- ncol(X)
 c0 <- ests$c
 b <- ests$b
 covEst <- ests$Sigma
-BetaEst <- ests$Beta
+BetaEst <- ests$coefficients
 
 sigmaXinv <- solve(crossprod(X)/n)
 Sres <- Y - X %*% BetaEst

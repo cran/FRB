@@ -15,7 +15,7 @@ Summary method for objects of class \code{FRBpca}, and print method of the summa
   \item{object}{ an \R object of class \code{FRBpca}, typically created by \code{\link{FRBpcaS}} or \code{\link{FRBpcaMM}} }
   \item{confmethod}{ which kind of bootstrap confidence intervals to be displayed: 
 'BCA'= bias corrected and accelerated method, 'basic'= basic bootstrap method, 'both'= both kinds of confidence intervals }
-  \item{digits}{ number of digits for printing (defaulting to 3) }
+  \item{digits}{ number of digits for printing (default is 3) }
   \item{x}{ an \R object of class \code{summary.FRBpca}, resulting from \code{summary(\link{FRBpcaS}(),...)} or \code{summary(\link{FRBpcaMM}(),...)} }
   \item{\dots}{ potentially more arguments to be passed to methods }
 }
@@ -23,7 +23,7 @@ Summary method for objects of class \code{FRBpca}, and print method of the summa
 The \code{print} method displays mostly the components of the \code{summary} object as listed in the Value section. 
 }
 \value{
-  \code{summary} returns an object of class \code{summary.FRBpca}, which is a list containing:
+  \code{summary} returns an object of class \code{summary.FRBpca}, which contains the following components:
   \item{eigvals }{eigenvalues of the shape estimate (variances of the principal components) with confidence limits}
   \item{eigvecs }{eigenvectors of the shape estimate (loadings of the principal components)}
   \item{avgangle }{bootstrap estimates of average angles between true and estimated eigenvectors}
@@ -31,7 +31,7 @@ The \code{print} method displays mostly the components of the \code{summary} obj
   \item{method }{PCA method that was used}
   \item{digits}{ number of digits for printing }
   }
-\author{ Gert Willems and Ella Roelant }
+\author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
 \seealso{ \code{\link{FRBpcaS}}, \code{\link{FRBpcaMM}},  \code{\link{print.FRBpca}}, \code{\link{plot.FRBpca}} }
 \examples{
 data(ForgedBankNotes)

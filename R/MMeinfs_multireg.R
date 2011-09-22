@@ -65,7 +65,7 @@ p <- ncol(X)
 c0 <- ests$c0
 b <- ests$b
 c1 <- ests$c1
-MMBeta <- ests$Beta
+MMBeta <- ests$coefficients
 MMSigma <- ests$Sigma
 
 sigmaXinv <- solve(crossprod(X)/n)

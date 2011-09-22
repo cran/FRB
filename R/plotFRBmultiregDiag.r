@@ -10,11 +10,11 @@ X <- FRBres$X
 n <- nrow(X)
 q <- ncol(Y)
 # compute the residual distances:
-resids <- Y - X %*% FRBres$Beta
-if (!is.null(FRBres$int)) {   # for GS-estimates
-    resids <- resids - as.matrix(rep(1,n))%*%FRBres$int 
-    X <- cbind(rep(1,n), X)
-}
+resids <- Y - X %*% FRBres$coefficients
+#if (!is.null(FRBres$int)) {   # for GS-estimates
+#    resids <- resids - as.matrix(rep(1,n))%*%FRBres$int 
+#    X <- cbind(rep(1,n), X)
+#}
 residsD <- sqrt(mahalanobis(resids, rep(0,q), FRBres$Sigma))
 
 if (Xdist) {
@@ -30,7 +30,7 @@ if (Xdist) {
   else
     ests <- MMest_multireg(as.matrix(rep(1,n)), XwI, control=FRBres$control)
 
-  Xloc <- ests$Beta
+  Xloc <- ests$coefficients
   Xscatter <- ests$Sigma
   leverageD <- sqrt(mahalanobis(XwI, Xloc, Xscatter))
 

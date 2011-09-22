@@ -26,7 +26,7 @@ recognize the extent to which each variable is responsible for the overall devia
 
 
 }
-\author{ Gert Willems and Ella Roelant }
+\author{ Gert Willems, Ella Roelant and Stefan Van Aelst }
 \seealso{ \code{\link{FRBhotellingS}}, \code{\link{FRBhotellingMM}} }
 \examples{
 
@@ -51,11 +51,7 @@ plot(res)
 
 ## Two sample robust Hotelling test
 data(hemophilia)
-grp <-as.factor(hemophilia[,3])
-x <- hemophilia[which(grp==levels(grp)[1]),1:2]
-y <- hemophilia[which(grp==levels(grp)[2]),1:2]
-res = FRBhotellingMM(x,y)
-
+res <- FRBhotellingMM(cbind(AHFactivity,AHFantigen)~gr,data=hemophilia)
 plot(res)
 
 # From the confidence limits it can be seen that the significant difference

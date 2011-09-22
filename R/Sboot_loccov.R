@@ -1,4 +1,4 @@
-Sboot_loccov <- function(Y, R, ests=Sest_loccov(Y))
+Sboot_loccov <- function(Y, R=999, ests=Sest_loccov(Y))
 {
 # robust bootstrap for multivariate S location covariance estimation 
 # INPUT:

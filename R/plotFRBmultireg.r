@@ -3,10 +3,9 @@ plot.FRBmultireg <- function(x, expl, resp, confmethod = c("BCA","basic"), onepa
 FRBres <- x
 confmethod <- match.arg(confmethod)
 currentAsk <- devAskNewPage(ask = NULL)
-
 if (!is.null(x$bootest)) {
-  allexpl <- rownames(FRBres$Beta)
-  allresp <- colnames(FRBres$Beta)
+  allexpl <- rownames(FRBres$coefficients)
+  allresp <- colnames(FRBres$coefficients)
   p <- length(allexpl)
   q <- length(allresp)
   
@@ -157,6 +156,7 @@ if (!is.null(x$bootest)) {
       devAskNewPage(ask = TRUE) 
     }
   }
+par(mfrow=(c(1,1)))
 }
 else warning("Could not plot confidence intervals; FRB was not performed") 
 

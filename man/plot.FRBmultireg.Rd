@@ -36,7 +36,7 @@
 With \eqn{p} and \eqn{q} the number of explanatory resp. response variables specified, the function by default 
   (i.e. if \code{onepage=TRUE})
   plots a \eqn{p} by \eqn{q} matrix of histograms, showing the bootstrap recalculations of the corresponding entry in the regression 
-  coefficient matrix \code{Beta} as provided in \code{x}. The original estimates for the coefficients are indicated by dotted lines,
+  coefficient matrix as provided in \code{x}. The original estimates for the coefficients are indicated by dotted lines,
   while the solid lines are the bootstrap confidence limits. In case the interval does not contain zero, the plot title is
   printed in red and a star is added, indicating significance.
   
@@ -81,8 +81,7 @@ plot(Sres)
 #the plot command above selected a subset, since otherwise an error may occur; 
 #as may happen when you explicitely ask for all coefficients to be plotted on one page:
 \dontrun{
-plot(Sres, expl=1:6, resp=1:3)
-}
+plot(Sres, expl=1:6, resp=1:3)}
 
 #use separate pages for each response in case of many covariates: 
 plot(Sres, onepage=FALSE)
@@ -91,6 +90,4 @@ plot(Sres, onepage=FALSE)
 plot(Sres, expl=c("education", "occupation"), resp=c("selfesteem","reading"))
 #or (the same):
 plot(Sres, expl=2:3, resp=c(3,1))
-
-
 }

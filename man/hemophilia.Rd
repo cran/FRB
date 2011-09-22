@@ -30,8 +30,8 @@ Program Using Density Estimation in \emph{Proceedings in Computational statistic
 }
 \references{
 \itemize{
-\item Johnson, R.A. and Wichern, D. W. \emph{Applied Multivariate Statistical Analysis} (Prentice Hall, International
-Editions, 2002, fifth edition)
+\item Johnson, R.A. and Wichern, D. W. (2002) \emph{Applied Multivariate Statistical Analysis} (Prentice Hall, International
+Editions, fifth edition)
 \item Hawkins, D. M. and McLachlan, G.J. (1997) High-Breakdown Linear Discriminant Analysis \emph{J.
 Amer. Statist. Assoc.}, \bold{92}, 136-143.
 \item Hubert, M., Van Driessen, K. (2004) Fast and robust discriminant analysis, \emph{Computational Statistics

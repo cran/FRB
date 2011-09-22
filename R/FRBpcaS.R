@@ -1,4 +1,42 @@
-FRBpcaS <- function(Y, R=999, bdp=0.5, conf=0.95, control=Scontrol(...), ...)
+FRBpcaS <- function(Y,...) UseMethod("FRBpcaS")
+
+
+FRBpcaS.formula <- function (formula, data = NULL, ...) 
+{
+.check_vars_numeric <- function (mf) 
+{
+    mt <- attr(mf, "terms")
+    mterms <- attr(mt, "factors")
+    mterms <- rownames(mterms)[apply(mterms, 1, any)]
+    any(sapply(mterms, function(x) is.factor(mf[, x]) || !is.numeric(mf[, 
+        x])))
+}
+#--------------------------------------------------------------------------
+# Main function
+
+    cl <- match.call()
+    mt <- terms(formula, data = data)
+    if (attr(mt, "response") > 0L) 
+        stop("response not allowed in formula")
+    mf <- match.call(expand.dots = FALSE)
+    mf$... <- NULL
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval.parent(mf)
+    if (.check_vars_numeric(mf)) 
+        stop("PCA applies only to numerical variables")
+    na.act <- attr(mf, "na.action")
+    mt <- attr(mf, "terms")
+    attr(mt, "intercept") <- 0L
+    x <- model.matrix(mt, mf)
+    res <- FRBpcaS.default(x, ...)
+    cl <- match.call()
+    cl[[1]] <- as.name("FRBpcaS")
+    res$call <- cl
+    if (!is.null(na.act)) res$na.action <- na.act
+    return(res)
+}
+
+FRBpcaS.default <- function(Y, R=999, bdp=0.5, conf=0.95, control=Scontrol(...), na.action=na.omit, ...)
 {
 # performs PCA based on the multivariate S estimate of shape, with
 # fast and robust bootstrap
@@ -81,8 +119,14 @@ return(rec)
 # --------------------------------------------------------------------
 
 Y <- as.matrix(Y)
+Y=na.action(Y)
+
 n <- nrow(Y)
 q <- ncol(Y)
+if (q <= 1L) stop("at least two variables needed for PCA")
+if (n < q) stop("For PCA the number of observations cannot be smaller than the 
+number of variables")
+
 #bdp <- .5
 dimens <- q + q*q
 
@@ -135,9 +179,10 @@ for (r in 1:R) {
     }
     correctedSGammast <- detSigma^(-1/q) * correctedSSigmast
     eigresGammast <- eigen(correctedSGammast)
-    IXGammast <- order(eigresGammast$values, decreasing=TRUE)    
+IXGammast <- order(eigresGammast$values, decreasing=TRUE)    
     eigenvaluesGammast <- eigresGammast$values[IXGammast]
-#    if (any(eigenvaluesGammast<0)) { 
+    if (any(is.complex(eigenvaluesGammast))){bootsampleOKreally[r] <- 0; next}
+    if (any(eigenvaluesGammast<0))	  {bootsampleOKreally[r] <- 0; next} 
 #        eigenvaluesGammast <- pmax(0, eigenvaluesGammast)
 #        bootsampleOK[r] <- 0
 #    }
@@ -153,7 +198,7 @@ for (r in 1:R) {
 
     Svecs <- eigenvectorsGammast
     for (k in 1:q) {
-        bootangles[k,r] <- acos(abs(t(Svecs[,k]) %*% Seigvecs[,k]/sqrt(t(Svecs[,k]) %*% Svecs[,k])/sqrt(t(Seigvecs[,k])%*%Seigvecs[,k])))
+        bootangles[k,r] <- acos(min(abs(t(Svecs[,k]) %*% Seigvecs[,k]/sqrt(t(Svecs[,k]) %*% Svecs[,k])/sqrt(t(Seigvecs[,k])%*%Seigvecs[,k])),1))
     }
     booteigvalsGamma[,r] <- eigenvaluesGammast
     booteigvecs[,r] <- vecop(eigenvectorsGammast)
@@ -173,7 +218,7 @@ if (nfailed > 0.75*R) {
 
 bootangles <- bootangles[,bootindicesOK]  
 booteigvalsGamma <- booteigvalsGamma[,bootindicesOK]
-bootpercvars <- bootpercvars[,bootindicesOK]
+bootpercvars <- bootpercvars[,bootindicesOK,drop=FALSE]
 booteigvecs <- booteigvecs[,bootindicesOK]
                                     
 avgangle <- apply(bootangles,1,mean)

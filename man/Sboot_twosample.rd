@@ -8,20 +8,20 @@ method.
 
 }
 \usage{
-Sboot_twosample(X, groups, R, ests = Sest_twosample(X, groups))
+Sboot_twosample(X, groups, R = 999, ests = Sest_twosample(X, groups))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{X}{ matrix or data frame }
-  \item{groups}{ vector of 1's and 2's, indicating group numbers }
- \item{R}{ number of bootstrap samples }
-  \item{ests}{ original two-sample S-estimates as returned by \code{\link{Sest_twosample}}() }
+  \item{X}{ matrix or data frame. }
+  \item{groups}{ vector of 1's and 2's, indicating group numbers. }
+ \item{R}{ number of bootstrap samples. Default is \code{R=999}. }
+  \item{ests}{ original two-sample S-estimates as returned by \code{\link{Sest_twosample}}(). }
 }
 \details{This function is called by \code{\link{FRBhotellingS}}, it is typically not to be used on its own. 
 It requires the result of \code{\link{Sest_twosample}} applied on \code{X}, supplied through the argument \code{ests}. 
 If \code{ests} is not provided, \code{\link{Sest_twosample}} will be called with default arguments. 
 
-The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators. 
+The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators and extended to the two sample setting by Roelant et al. (2008).
 
 The value \code{centered} gives a matrix with \code{R} columns and \eqn{2*p+p*p} rows (\eqn{p} is the number of variables in \code{X}), 
 containing the recalculated estimates of the S-location for the first and second center and common S-covariance. Each column represents 
@@ -29,8 +29,6 @@ a different bootstrap sample.
 The first \eqn{p} rows are the location estimates of the first center, the next \eqn{p} rows are the location
 estimates of the second center and the last \eqn{p*p} rows are the common covariance estimates (vectorized). The estimates
 are centered by the original estimates, which are also returned through \code{Sest}.
-
- 
 }
 \value{
   A list containing:
@@ -41,18 +39,20 @@ are centered by the original estimates, which are also returned through \code{Se
 }
 \references{
 \itemize{ 
+\item E. Roelant, S. Van Aelst and G. Willems, (2008) Fast Bootstrap for Robust Hotelling Tests, COMPSTAT 2008: 
+Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verlag, 709--719.
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
+bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
+regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
 }
 }
-\author{ Ella Roelant and Gert Willems }
+\author{ Ella Roelant, Gert Willems and Stefan Van Aelst}
 %\note{ ~~further notes~~ 
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{ \code{\link{FRBhotellingS}} and \code{\link{Sest_twosample}} }
+\seealso{ \code{\link{FRBhotellingS}}}
 \examples{
 Y1 <- matrix(rnorm(50*5), ncol=5)
 Y2 <- matrix(rnorm(50*5), ncol=5)

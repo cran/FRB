@@ -1,4 +1,4 @@
-Sboot_multireg<- function(X, Y, R, conf=0.95, ests=Sest_multireg(X, Y))
+Sboot_multireg<- function(X, Y, R=999, conf=0.95, ests=Sest_multireg(X, Y))
 {
 # robust bootstrap for multivariate S-regression
 # INPUT:
@@ -136,11 +136,14 @@ pvalueCI_BCA <- function(sorted, estim, infl, conf)
     }
   return(list(CI=CI, pvalue=pvalue))
 }
-#------------------------------------------------------------------------------#
+# --------------------------------------------------------------------
+# -                         main function                            -
+# --------------------------------------------------------------------
 
 Y <- as.matrix(Y)
 X <- as.matrix(X)
 n <- nrow(X)
+if (nrow(ests$coefficients)>ncol(X)) X <- cbind(rep(1,n),X)
 p <- ncol(X)
 q <- ncol(Y)
 dimens <- p*q + q*q
@@ -151,7 +154,7 @@ Ip <- diag(rep(1,p))
 c <- ests$c
 b <- ests$b
 Sigma0 <- ests$Sigma
-Beta0 <- ests$Beta
+Beta0 <- ests$coefficients
 
 Sinv <- solve(Sigma0)
 
@@ -293,7 +296,7 @@ if (ROK>1) {
   
   # compute bootstrap estimates of standard error
   SSEs <- sqrt(apply(bootbiasmat, 1, var))
-  
+  Scov <- var(t(bootbiasmat))
   # sort bootstrap recalculations for constructing intervals
   sortedSest <- t(apply(bootbiasmat, 1, sort))
   
@@ -325,6 +328,7 @@ else
   warning("Too many bootstrap samples discarded; FRB is cancelled")
   bootbiasmat <- NULL
   SSEs <- NULL
+  Scov=NULL
   estCIbca <- NULL
   estCIbasic <- NULL
   pvaluebca <- NULL
@@ -332,7 +336,9 @@ else
   }
 #############################################################################
 
-return(list(centered=bootbiasmat, vecest=vecestim, SE=SSEs, CI.bca=estCIbca, p.bca=pvaluebca, p.basic=pvaluebasic, CI.basic=estCIbasic, ROK=ROK))
+return(list(centered=bootbiasmat, vecest=vecestim, SE=SSEs, cov=Scov, 
+CI.bca=estCIbca, p.bca=pvaluebca, p.basic=pvaluebasic, CI.basic=estCIbasic, 
+ROK=ROK))
 
 }
 

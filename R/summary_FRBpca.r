@@ -80,7 +80,7 @@ dimnames(eigvalstoprint) <- list(c("      estimates", paste("  BCa ", x$conf*100
 
 cat(x$method, "\n\n")
 cat("Standard deviations:\n")
-print(sqrt(eigvalstoprint), digits = digits)
+print(sqrt(pmax(eigvalstoprint,0)), digits = digits)
 cat("\n")
 
 }

@@ -24,10 +24,10 @@
   The original data set in Flury and Riedwyl (1988) additionally contained 100 genuine bank notes, but these are not included here. 
 }
 \source{
- B. Flury and H. Riedwyl (1988). \emph{Multivariate Statistics: A practical approach}. London: Chapman & Hall. 
+ B. Flury and H. Riedwyl (1988) \emph{Multivariate Statistics: A practical approach}. London: Chapman & Hall. 
  }
 \references{
-M. Salibian-Barrera, S. Van Aelst and G. Willems (2006). PCA based on multivariate MM-estimators
+M. Salibian-Barrera, S. Van Aelst and G. Willems (2006) PCA based on multivariate MM-estimators
 with fast and robust bootstrap. \emph{Journal of the American Statistical Association}, \bold{101}, 1198-1211.
 }
 \examples{

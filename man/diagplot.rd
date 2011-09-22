@@ -18,7 +18,7 @@
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{ an \R object of class \code{FRBmultireg} (typically created by  \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}} or \code{\link{FRBmultiregGS}})
+  \item{x}{ an \R object of class \code{FRBmultireg} (typically created by  \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}} or \code{\link{FRBmultiregGS}} or by \code{\link{Sest_multireg}}, \code{\link{MMest_multireg}} or \code{\link{GSest_multireg}})
    or an \R object of class \code{FRBpca} (typically created by  \code{\link{FRBpcaS}} or \code{\link{FRBpcaMM}})
    or an \R object of class \code{FRBhot} (typically created by  \code{\link{FRBhotellingS}} or \code{\link{FRBhotellingMM}}) }
   \item{Xdist}{ logical: if TRUE, the plot shows the robust distance versus the distance in the space of the explanatory variables;
@@ -51,7 +51,7 @@ To avoid the additional computation time, one can choose \code{Xdist=FALSE}, in 
 versus the index of the observation.
 
 The default plot in the context of PCA (i.e. for objects of type \code{FRBpca} and \code{EIF=FALSE})
-is a plot proposed by Pison and Van Aelst (2002). It shows the robust distance versus a measure of the overall empirical influence
+is a plot proposed by Pison and Van Aelst (2004). It shows the robust distance versus a measure of the overall empirical influence
 of the observation on the (classical) principal components. The empirical influences are obtained by using the influence function of
 the eigenvectors of the empirical or classical shape estimator at the normal model, and by
 substituting therein the robust estimates for the population parameters.
@@ -73,11 +73,13 @@ covariance estimate \eqn{\hat{\Sigma}}{\Sigma}.
 %}
 \references{
 \itemize{
+\item G. Pison and S. Van Aelst (2004). Diagnostic Plots for Robust Multivariate Methods. \emph{Journal of Computational and Graphical Statistics}, \bold{13}, 310--329.
+%\item G. Pison and S. Van Aelst (2002). Analyzing robust multivariate methods
+%with a diagnostic plot.  In \emph{Proceedings in Computational Statistics 2002 (W.
+%Hardle and B. Ronz, eds.)}, 165-170.
 \item  S. Van Aelst and G. Willems (2005). Multivariate regression S-estimators for robust estimation and
-inference. \emph{Statistica Sinica}, \bold{15}, 981-1001.
-\item G. Pison and S. Van Aelst (2002). Analyzing robust multivariate methods
-with a diagnostic plot.  In \emph{Proceedings in Computational Statistics 2002 (W.
-Hardle and B. Ronz, eds.)}, 165-170.}
+inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
+}
 }
 \author{ Gert Willems and Ella Roelant }
 %\note{ ~~further notes~~
@@ -90,7 +92,7 @@ Hardle and B. Ronz, eds.)}, 165-170.}
 
 # for multivariate regression:
 data(schooldata)
-MMres <- FRBmultiregMM(cbind(reading,mathematics,selfesteem)~., data=schooldata, R=10)
+MMres <- MMest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)
 diagplot(MMres)
 # a large 'bad leverage' outlier should be noticeable (observation59)
 
@@ -103,10 +105,7 @@ diagplot(MMres)
 
 # for Hotelling tests (two-sample)
 data(hemophilia)
-grp <-as.factor(hemophilia[,3])
-x <- hemophilia[which(grp==levels(grp)[1]),1:2]
-y <- hemophilia[which(grp==levels(grp)[2]),1:2]
-MMres <- FRBhotellingMM(x,y, R=10)
+MMres <- FRBhotellingMM(cbind(AHFactivity,AHFantigen)~gr,data=hemophilia, R=10)
 diagplot(MMres)
 # the data seem practically outlier-free
 

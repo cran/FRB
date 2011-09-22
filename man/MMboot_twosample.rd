@@ -8,21 +8,21 @@ method.
 
 }
 \usage{
-MMboot_twosample(X, groups, R, ests = MMest_twosample(X, groups))
+MMboot_twosample(X, groups, R = 999, ests = MMest_twosample(X, groups))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{X}{ matrix of data frame }
-  \item{groups}{ vector of 1's and 2's, indicating group numbers }
-  \item{R}{ number of bootstrap samples }
-  \item{ests}{ original MM-estimates as returned by \code{\link{MMest_twosample}}() }
+  \item{X}{ matrix of data frame. }
+  \item{groups}{ vector of 1's and 2's, indicating group numbers. }
+  \item{R}{ number of bootstrap samples. Default is \code{R=999}. }
+  \item{ests}{ original MM-estimates as returned by \code{\link{MMest_twosample}}(). }
 }
 \details{
  This function is called by \code{\link{FRBhotellingMM}}, it is typically not to be used on its own. 
 It requires the result of \code{\link{MMest_twosample}} applied on \code{X}, supplied through the argument \code{ests}. 
 If \code{ests} is not provided, \code{\link{MMest_twosample}} will be called with default arguments. 
 
-The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators. 
+The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators and extended to the two sample setting by Roelant et al. (2008).
 
 The value \code{centered} gives a matrix with \code{R} columns and \eqn{2*(2*p+p*p)} rows (\eqn{p} is the number of variables in \code{X}), 
 containing the recalculated estimates of the MM-locations, MM-shape, S-covariance and S-locations. 
@@ -42,18 +42,20 @@ The estimates are centered by the original estimates, which are also returned th
 }
 \references{
 \itemize{ 
+\item E. Roelant, S. Van Aelst and G. Willems, (2008) Fast Bootstrap for Robust Hotelling Tests, COMPSTAT 2008: 
+Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verlag, 709--719.
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
+bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
+regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
 }
 }
-\author{ Ella Roelant and Gert Willems }
+\author{ Ella Roelant, Gert Willems and Stefan Van Aelst}
 %\note{ ~~further notes~~ 
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{ See Also \code{\link{FRBhotellingMM}},  \code{\link{MMest_twosample}},  \code{\link{Sboot_twosample}} }
+\seealso{ See Also \code{\link{FRBhotellingMM}}, \code{\link{Sboot_twosample}} }
  
 \examples{
 %##---- Should be DIRECTLY executable !! ----

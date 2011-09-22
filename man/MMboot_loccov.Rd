@@ -6,20 +6,21 @@
   Calculates bootstrapped MM-estimates of multivariate location and scatter using the Fast and Robust Bootstrap
 method. }
 \usage{
-MMboot_loccov(Y, R, ests = MMest_loccov(Y))
+MMboot_loccov(Y, R = 999, ests = MMest_loccov(Y))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{ matrix or data frame }
-  \item{R}{ number of bootstrap samples }
-  \item{ests}{ original MM-estimates as returned by \code{\link{MMest_loccov}}() }
+  \item{Y}{ matrix or data frame. }
+  \item{R}{ number of bootstrap samples. Default is \code{R=999}. }
+  \item{ests}{ original MM-estimates as returned by \code{\link{MMest_loccov}}(). }
 }
 \details{
 This function is called by \code{\link{FRBpcaMM}} and \code{\link{FRBhotellingMM}}, it is typically not to be used on its own. 
-It requires the result of \code{\link{MMest_loccov}} applied on \code{Y}, supplied through the argument \code{ests}. 
-If \code{ests} is not provided, \code{\link{MMest_loccov}} will be called with default arguments. 
+It requires the MM-estimates of multivariate location and scatter/shape
+(the result of \code{\link{MMest_loccov}} applied on \code{Y}), supplied through the argument \code{ests}. 
+If \code{ests} is not provided, \code{\link{MMest_loccov}} calls the implementation of the multivariate MM-estimates in package \pkg{rrcov} of Todorov and Filzmoser (2009) with default arguments. 
 
-The fast and robust bootstrap was first developed by Salibian-Barrera and Zamar (2002) for univariate regression MM-estimators. 
+For multivariate data the fast and robust bootstrap was developed by Salibian-Barrera, Van Aelst and Willems (2006).
 
 The value \code{centered} gives a matrix with \code{R} columns and \eqn{2*(p+p*p)} rows (\eqn{p} is the number of variables in \code{Y}), 
 containing the recalculated estimates of the MM-location, MM-shape, S-covariance and S-location. 
@@ -35,18 +36,20 @@ A list containing:
 }
 \references{
 \itemize{ 
+\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2006) PCA based on multivariate MM-estimators
+with fast and robust bootstrap. \emph{Journal of the American Statistical Association}, \bold{101}, 1198--1211.
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
-\item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
+bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
+regression. 
+\item V. Todorov and P. Filzmoser (2009) An Object-Oriented Framework for Robust Multivariate Analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
 }
 }
-\author{ Gert Willems and Ella Roelant }
+\author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
 %\note{ ~~further notes~~ 
 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{ \code{\link{FRBpcaMM}}, \code{\link{FRBhotellingMM}},  \code{\link{MMest_loccov}},  \code{\link{Sboot_loccov}} }
+\seealso{ \code{\link{FRBpcaMM}}, \code{\link{FRBhotellingMM}},  \code{\link{Sboot_loccov}} }
 \examples{
 %##---- Should be DIRECTLY executable !! ----
 %##-- ==>  Define data, use random,

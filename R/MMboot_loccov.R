@@ -1,4 +1,4 @@
-MMboot_loccov <- function(Y, R, ests = MMest_loccov(Y))
+MMboot_loccov <- function(Y, R=999, ests = MMest_loccov(Y))
 {
 # robust bootstrap for multivariate MM location/shape estimation 
 # INPUT:
@@ -305,7 +305,7 @@ for (r in 1:R) {
     wbig <- matrix(rep(sqrtwu,q),ncol=q) 
     wres <- resmatrixst * wbig  
     Gst <- crossprod(wres)
-    Gst <- det(Gst)^(-1/q) * Gst    
+    Gst <- (determinant(Gst,logarithm=FALSE)$modulus)^(-1/q) * Gst  
     Vst <- auxscalesq * Gst
     
     sqrtwu <- sqrt(uditildevecst)

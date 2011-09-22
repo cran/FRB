@@ -1,4 +1,66 @@
-GSest_multireg <- function(X,Y, bdp=.5, control=GScontrol(...), ...)
+GSest_multireg  <- function(X,...) UseMethod("GSest_multireg")
+
+GSest_multireg.formula <- function(formula, data=NULL, ...)
+{
+
+# --------------------------------------------------------------------
+
+# Returns response of formula in nice way
+
+model.multiregresp<-function (data, type = "any") 
+{
+    if (attr(attr(data, "terms"), "response")) {
+        if (is.list(data) | is.data.frame(data)) {
+  		v <- data[[1L]]
+		if (is.data.frame(data) && is.vector(v)) v <- data[,1L,drop=FALSE]
+            if (type == "numeric" && is.factor(v)) {
+                warning("using type=\"numeric\" with a factor response will be ignored")
+            }
+            else if (type == "numeric" | type == "double") 
+                storage.mode(v) <- "double"
+            else if (type != "any") 
+                stop("invalid response type")
+            if (is.matrix(v) && ncol(v) == 1L){ 
+                if (is.data.frame(data)) {v=data[,1L,drop=FALSE]}
+	          else {dim(v) <- NULL}}
+            rows <- attr(data, "row.names")
+            if (nrows <- length(rows)) {
+                if (length(v) == nrows) 
+                  names(v) <- rows
+                else if (length(dd <- dim(v)) == 2L) 
+                  if (dd[1L] == nrows && !length((dn <- dimnames(v))[[1L]])) 
+                    dimnames(v) <- list(rows, dn[[2L]])
+            }
+            return(v)
+        }
+        else stop("invalid 'data' argument")
+    }
+    else return(NULL)
+}
+
+
+    mt <- terms(formula, data = data)
+    if (attr(mt, "response") == 0L) stop("response is missing in formula")
+    mf <- match.call(expand.dots = FALSE)
+    mf$... <- NULL
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval.parent(mf)
+    miss <- attr(mf,"na.action")
+    Y <- model.multiregresp(mf)
+    Terms <- attr(mf, "terms")
+    X <- model.matrix(Terms, mf)
+    res <- GSest_multireg.default(X, Y, int = FALSE, ...)
+    res$terms <- Terms
+    cl <- match.call()
+    cl[[1L]] <- as.name("GSest_multireg")
+    res$call <- cl
+    res$xlevels <- .getXlevels(mt, mf)
+    if (!is.null(miss)) res$na.action <- miss
+    return(res)
+}                                                 
+
+
+GSest_multireg.default <- function(X,Y, int = TRUE, bdp=.5, control=GScontrol(...), na.action=na.omit, ...)
 {
 # A fast procedure to compute a GS-estimator based on the algorithm
 # proposed by Salibian-Barrera, M. and Yohai, V.J. (2005),
@@ -366,26 +428,45 @@ return(munieuw)
 # -                        main function                                                           -
 # --------------------------------------------------------------------------------------------------
 
-p<-ncol(X)
-interceptdetection <- apply(X==1, 2, all)
-zonderint <- (1:p)[interceptdetection==FALSE]
-xzonderint <- X[,zonderint]
-X <- xzonderint
+Y <- as.matrix(Y)
+ynam=colnames(Y)
+q=ncol(na.action(Y))
+if (q < 1L) stop("at least one response needed")
+X <- as.matrix(X)
+xnam=colnames(X)
+if (nrow(Y) != nrow(X))stop("x and y must have the same number of observations")
+YX=na.action(cbind(Y,X))
+Y=YX[,1:q,drop=FALSE]
+X=YX[,-(1:q),drop=FALSE]
+n <- nrow(Y)
+p <- ncol(X)
+q <- ncol(Y)
+if ((p < 1L) && !int) stop("at least one predictor needed")
+if (q < 1L) stop("at least one response needed")
+if (n < (p+q)) stop("For robust multivariate regression the number of observations cannot be smaller than the 
+total number of variables")
 
+interceptdetection <- apply(X==1, 2, all)
+if (any(interceptdetection)) int=TRUE
+zonderint <- (1:p)[interceptdetection==FALSE]
+xzonderint <- X[,zonderint,drop=FALSE]
+X <- xzonderint
+p<-ncol(X)
+#if (p < 1L) stop("at least one predictor needed")
+
+if (is.null(ynam))
+    colnames(Y) <- paste("Y",1:q,sep="")
+if (is.null(xnam)&& (p>=1L)) 
+    colnames(X) <- paste("X",1:p,sep="")
+
+ngroot <- choose(n,2)
+cc <- TbscGS(bdp,q)
+b <- (cc/6)*TbsbGS(cc,q)
 nsamp <- control$nsamp
 bestr <- control$bestr # number of best solutions to keep for further C-steps
 k <- control$k # number of C-steps on elemental starts
 convTol <- control$convTol
 maxIt <- control$maxIt
-
-X <- as.matrix(X)
-Y <- as.matrix(Y)
-n <- nrow(X)
-ngroot <- choose(n,2)
-p <- ncol(X)
-q <- ncol(Y)
-cc <- TbscGS(bdp,q)
-b <- (cc/6)*TbsbGS(cc,q)
 
 #set.seed(10)
 
@@ -394,7 +475,6 @@ bestgammas <- matrix(0,q*q,bestr)
 bestscales <- 1e20 * rep(1,bestr)
 sworst <- 1e20
 xextra <- cbind(rep(1,n),X)
-
 for(i in 1:nsamp)
   { # 
     # find a (p+q+1)-subset in general position.
@@ -405,17 +485,18 @@ for(i in 1:nsamp)
 
     while ((rankR < q) && (itertest<200)) {
 	  ranset <- sample(n,p+q+1)
-        xj <- xextra[ranset,]
-        yj <- Y[ranset,]
+        xj <- xextra[ranset,,drop=FALSE]
+        yj <- Y[ranset,,drop=FALSE]
     	  beta <- solve(crossprod(xj), crossprod(xj,yj))
         res <- yj - xj %*% beta
-	      qrRj <- qr(res)
+        qrRj <- qr(res)
         rankR <- qrRj$rank
         itertest <- itertest + 1
     }
     if (itertest==200) stop("too many degenerate subsamples")
 	
-    Smat <- crossprod(res)/(p+q-1)
+    #Smat <- crossprod(res)/(p+q-1)
+    Smat <- crossprod(res)
     Cmat <- det(Smat)^(-1/q)*Smat
     if (p>0)
       beta <- beta[2:(p+1),]
@@ -487,14 +568,40 @@ for (i in bestr:1) {
 GSbeta <- superbestbeta
 GScovariance <- superbestgamma*superbestscale^2
 intercept <- IRLSlocation(Y-X%*%GSbeta,GScovariance,bdp=bdp,cc=cc)
-GSbetatot <- rbind(intercept,GSbeta)
 
-Res <- Y-X%*%GSbeta
+Fit <- X%*%GSbeta
+Res <- Y-Fit
+method <- list(est="GS", bdp=bdp)
+
 psres <- sqrt(mahalanobis(Res, intercept, GScovariance))
 w <- scaledpsibiweight(psres,cc)
 outFlag <- (psres > sqrt(qchisq(.975, q)))
+if (int) {
+	GSbeta <- as.matrix(rbind(intercept,GSbeta),drop=FALSE)
+	dimnames(GSbeta)[[1]]=c("(intercept)",colnames(X))
+	X <- cbind(rep(1,n),X)
+	Fit <- X%*%GSbeta
+	Res <- Y-Fit       
+	}
+else{
+	GSbeta <- as.matrix(GSbeta,drop=FALSE)
+	dimnames(GSbeta)=list(colnames(X),colnames(Y))
+	} 
+if(ncol(Res)==1) Res=t(Res)
+if(ncol(Fit)==1) Fit=t(Fit)
 
-return(list( Beta = GSbetatot, Gamma = superbestgamma, scale = superbestscale, Sigma = GScovariance,b=b,c=cc, w=w, outFlag=outFlag))
+z <- list(#Beta = GSbeta
+coefficients=GSbeta,
+residuals=Res,
+fitted.values=Fit,
+method=method,
+control=control,
+Gamma = superbestgamma, Sigma = GScovariance, scale = superbestscale, 
+df=n+int-(q*qr(X)$rank),X=X,Y=Y,
+b=b,c=cc, weights=w, outFlag=outFlag)
+
+class(z) <- c("FRBmultireg") 
+return(z)
 }
 
 

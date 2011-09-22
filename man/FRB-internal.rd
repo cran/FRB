@@ -1,4 +1,10 @@
 \name{FRB-internal}
+\alias{predict.FRBmultireg}
+\alias{vcov.FRBmultireg}
+\alias{MMest_loccov}
+\alias{MMest_twosample}
+\alias{Sest_loccov}
+\alias{Sest_twosample}
 \alias{Seinfs_multireg}
 \alias{MMeinfs_multireg}
 \alias{GSeinfs_multireg}

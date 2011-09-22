@@ -115,8 +115,8 @@ X <- as.matrix(X)
 n <- nrow(X)
 p <- ncol(X)
 
-X1 <- X[groups==1,]
-X2 <- X[groups==2,]
+X1 <- X[groups==1,,drop=FALSE]
+X2 <- X[groups==2,,drop=FALSE]
 n1 <- sum(groups==1)
 n2 <- sum(groups==2)
 

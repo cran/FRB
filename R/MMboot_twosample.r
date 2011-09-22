@@ -1,4 +1,4 @@
-MMboot_twosample<-function(X, groups, R, ests = MMest_twosample(X,groups))
+MMboot_twosample<-function(X, groups, R=999, ests = MMest_twosample(X,groups))
 {
 # robust bootstrap for two sample MM location and common shape 
 # INPUT:                          
@@ -103,8 +103,8 @@ p<-ncol(X)
 
 n1 <- sum(groups==1)
 n2 <- sum(groups==2)
-X1 <- X[groups==1,]   
-X2 <- X[groups==2,]
+X1 <- X[groups==1,,drop=FALSE]   
+X2 <- X[groups==2,,drop=FALSE]
 dimens <- 4*p+2*p*p
 
 mu01 <- ests$SMu1
@@ -413,7 +413,7 @@ vecestim[(2*p+2*p*p+1):(3*p+2*p*p)] <- vecop(mu01)
 vecestim[(3*p+2*p*p+1):(4*p+2*p*p)]<- vecop(mu02)
 
 # to draw bootstrap samples
-set.seed(2)
+#set.seed(2)
 bootmatrix1 <- matrix(sample(n1,R*n1,replace=TRUE),ncol=R)
 bootmatrix2 <- matrix(sample(n2,R*n2,replace=TRUE),ncol=R)
 
@@ -423,7 +423,7 @@ bootbiasmat <- matrix(0,dimens,R)
 bootbiaszc <- matrix(0,dimens,R) 
 
 for (r in 1:R) {
-    X1st <- X1[bootmatrix1[,r],]
+    X1st <- X1[bootmatrix1[,r],,drop=FALSE]
     Resi1st <- X1st - matrix(rep(MMmu1,n1), n1, byrow=TRUE)
     divec1st <- sqrt(mahalanobis(Resi1st, rep(0,p), MMSigma))
     divec1st[divec1st<1e-5] <- 1e-5
@@ -448,10 +448,10 @@ for (r in 1:R) {
     V01stterm1 <- 1/(b*n)*p*crossprod(wres1)
     V01stterm2 <- 1/(b*n)*sum(wwditildevec1st)*Sigma0
     V01st <- V01stterm1-V01stterm2
-    
+ 
     B01st <- (1/sum(uditildevec1st))*crossprod(uditildevec1st,X1st)
 
-    X2st <- X2[bootmatrix2[,r],]
+    X2st <- X2[bootmatrix2[,r],,drop=FALSE]
     Resi2st <- X2st - matrix(rep(MMmu2,n2), n2, byrow=TRUE)
     divec2st <- sqrt(mahalanobis(Resi2st, rep(0,p), MMSigma))
     divec2st[divec2st<1e-5] <- 1e-5
@@ -496,7 +496,6 @@ for (r in 1:R) {
     # apply linear correction:
     bootbiasmat[,r] <- lincorrectmat %*% fstbias 
 }    
-
     
 return(list(centered=bootbiasmat,MMest=vecestim))
 }

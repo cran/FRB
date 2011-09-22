@@ -9,7 +9,8 @@
 Plot functions for \code{FRBpca} objects: plots PC variances, PC angles and PC loadings, with bootstrap inference 
 }
 \usage{
-\method{plot}{FRBpca}(x, which = 1:3, pcs.loadings = 1:min(5, length(x$eigval)), confmethod = c("BCA","basic"), ...)
+\method{plot}{FRBpca}(x, which = 1:3, pcs.loadings = 1:min(5, length(x$eigval)),
+confmethod = c("BCA","basic"), ...)
 
 
 plotFRBvars(x, cumul = 2, confmethod = c("BCA","basic"), 

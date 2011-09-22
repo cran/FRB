@@ -1,4 +1,4 @@
-GSboot_multireg <- function(X,Y,R,conf=0.95,ests=GSest_multireg(X,Y))
+GSboot_multireg <- function(X,Y,R=999,conf=0.95,ests=GSest_multireg(X,Y))
 {
 # robust bootstrap for multivariate GS-regression (only for the slope)+
 # confidence intervals
@@ -65,6 +65,18 @@ psi <- hulp*(abs(x)<c)
 return(psi)
 }
 
+# --------------------------------------------------------------------
+
+scaledpsibiweight <- function(x,c)
+{
+# Computes Tukey's biweight psi function with constant c for all values in x
+
+hulp <- 1 - 2*x^2/(c^2) + x^4/(c^4)
+psi <- hulp*(abs(x)<c)
+
+return(psi)
+}
+
 #------------------------------------------------------------------------
 commut <- function(p,m)
 {
@@ -96,6 +108,72 @@ for (col in 1:nc) {
     vecmat[startindex:(startindex+nr-1)] <- mat[,col]
 }
 return(vecmat)
+}
+
+# --------------------------------------------------------------------
+
+reconvec <- function(vec,ncol) {
+# reconstructs vecop'd matrix
+
+lcol <- length(vec)/ncol
+rec <- matrix(0,lcol,ncol)
+for (i in 1:ncol)
+    rec[,i] <- vec[((i-1)*lcol+1):(i*lcol)]
+
+return(rec)
+}
+
+#---------------------------------------------------------------------------
+IRLSlocation <- function(xmat,covmat,bdp,cc)
+{
+xmat <- as.matrix(xmat)
+n <- nrow(xmat)
+p <- ncol(xmat)
+neem <- sample(n,p+1)
+xsub <- as.matrix(xmat[neem,])
+
+
+initmu <- apply(xsub,2,mean)
+initrdis <- sqrt(mahalanobis(xmat, initmu, covmat))
+
+initobj <- mean(rhobiweight(initrdis,cc))
+
+weights <- scaledpsibiweight(initrdis,cc)
+
+itertest <- 0
+while ((sum(weights)==0) && (itertest<500)) {
+    
+    neem <- sample(n,p+1)
+    xsub <- as.matrix(xmat[neem,])
+   
+    initmu <- apply(xsub,2,mean)
+    initrdis <- sqrt(mahalanobis(xmat, initmu, covmat))
+    initobj <- mean(rhobiweight(initrdis,cc))
+    weights <- scaledpsibiweight(initrdis,cc)
+    itertest <- itertest + 1
+}
+if (itertest==500) stop("could not find suitable starting point for IRLS for intercept")   
+   
+sqrtweights <- sqrt(weights)
+munieuw <- crossprod(weights, xmat) / as.vector(crossprod(sqrtweights))
+
+rdisnieuw <-sqrt(mahalanobis(xmat,munieuw,covmat))
+
+objnieuw <- mean(rhobiweight(rdisnieuw,cc))
+
+iter <- 0
+while (((abs(initobj/objnieuw)-1) > 10^(-15)) && (iter < 100)) {
+    initobj <- objnieuw
+    initmu <- munieuw
+    initrdis <- rdisnieuw
+    weights <- scaledpsibiweight(initrdis,cc)
+    sqrtweights <- sqrt(weights)
+    munieuw <- crossprod(weights, xmat) / as.vector(crossprod(sqrtweights))
+    rdisnieuw <-sqrt(mahalanobis(xmat,munieuw,covmat))
+    objnieuw <- mean(rhobiweight(rdisnieuw,cc))
+    iter <- iter + 1
+}
+return(munieuw)
 }
 
 # --------------------------------------------------------------------
@@ -151,11 +229,13 @@ pvalueCI_BCA <- function(sorted, estim, infl, conf)
 # -                        main function                                            -
 # -----------------------------------------------------------------------------------
 
+
 X <- as.matrix(X)
 p<-ncol(X)
 interceptdetection <- apply(X==1, 2, all)
+#if (any(interceptdetection)) int=TRUE
 zonderint <- (1:p)[interceptdetection==FALSE]
-Xzonderint <- X[,zonderint]
+Xzonderint <- X[,zonderint,drop=FALSE]
 X <- as.matrix(Xzonderint)
 
  
@@ -164,17 +244,26 @@ n <- nrow(Y)
 m <- ncol(Y)
 p <- ncol(X)
 
+int <-nrow(ests$coefficients)> p
 dimens <- p*m+m*m
+dimenswith <- ifelse(int,(p+1)*m+m*m,dimens)
+
 
 Im <-  diag(rep(1,m))
 Ip <-  diag(rep(1,p))
  
 c <- ests$c
+#cc <- ests$c
 b <- ests$b
-Sigma <- ests$Sigma
-Betawith <- ests$Beta
-Beta <- as.matrix(Betawith[2:(p+1),])
+bdp <-ests$method$bdp
 
+Sigma <- ests$Sigma
+if(int) {
+	Betawith <- ests$coefficients
+	Beta <- as.matrix(Betawith[2:(p+1),,drop=FALSE])
+	Int <- t(as.matrix(Betawith[1,]))
+	}
+else{Beta <- ests$coefficients}	 
 Sinv <- solve(Sigma)
 
 #---------------------------------------------------------------------------
@@ -266,7 +355,8 @@ bootmatrix <- matrix(sample(n,R*n,replace=TRUE),ncol=R)
 
 # now do the actual bootstrapping
 
-bootbiasmat <- matrix(0,dimens,R)  
+bootbiasmat <- matrix(0,dimenswith,R)  
+#bootbiasint <- matrix(0,m,R)  
 bootsampleOK <- rep(1,R)
 
 for (r in 1:R) {
@@ -303,12 +393,29 @@ for (r in 1:R) {
       vecfst[(p*m+1):dimens] <- vecop(Sigmast)
     
       fstbias <- vecfst-vecestim
-      bootbiasmat[,r] <- lincorrectmat %*% fstbias  
+	approxest <- lincorrectmat %*% fstbias
+	
+if (int){	
+#	approxBeta <- vecestim[1:p*m,,drop=F]+approxest[1:p*m,,drop=F]
+#	approxSigma <- 
+#      approxBeta <- rbind(IRLSlocation(Yst-Xst%*%reconvec(approxBeta,m),GScovariance,bdp=bdp,cc=cc),reconvec(approxBeta,m)) 
+#      approxest <- c(vecop(approxBeta),approxest[-(1:p*m),,drop=F])
+
+      approxAll <- approxest+vecestim
+      approxBeta <- reconvec(approxAll[1:(p*m)],m)
+      approxSigma <- reconvec(approxAll[-(1:(p*m))],m)
+
+if (any(eigen(approxSigma,only.values = TRUE)$values<0)) approxSigma<-Sigma
+	bootbiasint <-IRLSlocation(Yst-Xst%*%approxBeta,approxSigma,bdp=bdp,cc=c)- Int
+	bootbiasmat[,r] <- c(bootbiasint,approxest)  
+	}
+else{     bootbiasmat[,r] <- approxest}  
+      
     }
 }
 
 #############################################################################
-
+if(int){vecestim=c(Int,vecestim)} 
 bootindicesOK <- (1:R)[bootsampleOK==1]
 ROK <- length(bootindicesOK)
 nfailed <- R - ROK
@@ -316,22 +423,23 @@ if (nfailed > 0)
   warning(paste(nfailed, " out of ", R, " bootstrap samples were discarded because of too few distinct observation with positive weight"))
 if (ROK>1) { 
   bootbiasmat = bootbiasmat[,bootindicesOK]
-
-  #compute bootstap estimates of variance
+  
+  #compute bootstrap estimates of variance
   GSSEs <- sqrt(apply(bootbiasmat,1,var))
-
+  GScov <- var(t(bootbiasmat))
   # sort bootstrap recalculations for constructing intervals
   sortedGSest <- t(apply(bootbiasmat, 1, sort))
 
   # empirical influences for computing a in BCa intervals, based on IF(GS)
   Einf <- GSeinfs_multireg (X, Y, ests=ests)
-  inflE <- cbind(Einf$infbeta, Einf$infsigma)
+if(int){inflE <- cbind(matrix(1,nrow=n,ncol=m),Einf$infbeta, Einf$infsigma)}
+else{inflE <- cbind(Einf$infbeta, Einf$infsigma)}
 
-  estCIbca <- matrix(0,dimens,2)
-  estCIbasic <- matrix(0,dimens,2)
-  pvaluebca <- rep(0,dimens)
-  pvaluebasic <- rep(0,dimens)
-  for (i in 1:(dimens)) {
+  estCIbca <- matrix(0,dimenswith,2)
+  estCIbasic <- matrix(0,dimenswith,2)
+  pvaluebca <- rep(0,dimenswith)
+  pvaluebasic <- rep(0,dimenswith)
+  for (i in 1:(dimenswith)) {
     bcares <- pvalueCI_BCA(sortedGSest[i,], vecestim[i], inflE[,i], conf)
     estCIbca[i,] <- bcares$CI
     pvaluebca[i] <- bcares$pvalue
@@ -341,7 +449,7 @@ if (ROK>1) {
   indexhigh <- ceiling((1 - conf)/2 * ROK)
   estCIbasic[,1] <- vecestim - sortedGSest[,indexlow]
   estCIbasic[,2] <- vecestim - sortedGSest[,indexhigh]
-  for (i in 1:(dimens)) {
+  for (i in 1:(dimenswith)) {
     alpha.twicebeta <- (rank(c(2*vecestim[i],sortedGSest[i,]+vecestim[i]))[1]-1)/ROK
     pvaluebasic[i] <- min(alpha.twicebeta, 1-alpha.twicebeta)*2
   }
@@ -351,13 +459,16 @@ else
   warning("Too many bootstrap samples discarded; FRB is cancelled")
   bootbiasmat <- NULL
   GSSEs <- NULL
+  GScov=NULL
   estCIbca <- NULL
   estCIbasic <- NULL
   pvaluebca <- NULL
   pvaluebasic <- NULL
 }
 
-return(list(centered=bootbiasmat,vecest=vecestim,SE=GSSEs,CI.bca=estCIbca,CI.basic=estCIbasic, p.bca=pvaluebca, p.basic=pvaluebasic, ROK=ROK))
+return(list(centered=bootbiasmat,vecest=vecestim,SE=GSSEs,cov=GScov,
+CI.bca=estCIbca,CI.basic=estCIbasic, p.bca=pvaluebca, p.basic=pvaluebasic, 
+ROK=ROK))
 }
 
 ##############################################################################
