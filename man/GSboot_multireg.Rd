@@ -63,6 +63,8 @@ Bootstrap samples which contain too few distinct observations with positive weig
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
 regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
 }
 }
 \author{ Ella Roelant, Stefan Van Aelst and  Gert Willems}
@@ -74,14 +76,15 @@ regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
 \examples{
 
 data(schooldata)
-school.x <- data.matrix(schooldata[,1:5])
+school.x1 <- data.matrix(schooldata[,1:2])
 school.y <- data.matrix(schooldata[,6:8])
 
 #computes 10 bootstrap recalculations starting from the GS-estimator
 #obtained from GSest_multireg
-bootres <- GSboot_multireg(school.x,school.y,R=10)
+\dontrun{
+bootres <- GSboot_multireg(school.x1,school.y,R=5)
 }
-
+}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 %\keyword{ ~kwd1 }

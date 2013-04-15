@@ -31,6 +31,12 @@ The \code{print} method displays mostly the components of the \code{summary} obj
   \item{method }{PCA method that was used}
   \item{digits}{ number of digits for printing }
   }
+\references{ 
+\itemize{
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
+}
 \author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
 \seealso{ \code{\link{FRBpcaS}}, \code{\link{FRBpcaMM}},  \code{\link{print.FRBpca}}, \code{\link{plot.FRBpca}} }
 \examples{

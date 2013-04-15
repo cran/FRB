@@ -73,7 +73,9 @@ The returned object inherits from class \code{mlm} such that the standard \code{
 \emph{The Annals of Statistics}, \bold{28}, 1219--1243. 
 \item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
 inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
-}
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
 

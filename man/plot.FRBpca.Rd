@@ -71,13 +71,13 @@ are shown, where the variables were ordered according to the absolute value of t
 variables for that particular PC are shown).
  
 }
-%\references{ 
-%\itemize{
-%\item G. Pison and S. Van Aelst (2002). Analyzing robust multivariate methods
-%with a diagnostic plot.  In \emph{Proceedings in Computational Statistics 2002 (W.
-%Hardle and B. Ronz, eds.)}, 165-170.
-%}
-%}
+\references{ 
+\itemize{
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
+}
+
 \author{ Gert Willems and Ella Roelant }
 \seealso{ \code{\link{FRBpcaS}}, \code{\link{FRBpcaMM}},  \code{\link{summary.FRBpca}} }
 \examples{

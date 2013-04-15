@@ -42,7 +42,8 @@ with fast and robust bootstrap. \emph{Journal of the American Statistical Associ
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 regression. 
 \item V. Todorov and P. Filzmoser (2009) An Object-Oriented Framework for Robust Multivariate Analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
-}
+\item S. Van Aelst and G. Willems (2013). Fast and Robust Bootstrap for Multivariate Inference: The R Package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.}
 }
 \author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
 %\note{ ~~further notes~~ 

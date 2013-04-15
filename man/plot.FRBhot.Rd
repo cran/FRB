@@ -26,6 +26,12 @@ recognize the extent to which each variable is responsible for the overall devia
 
 
 }
+\references{ 
+\itemize{
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
+}
 \author{ Gert Willems, Ella Roelant and Stefan Van Aelst }
 \seealso{ \code{\link{FRBhotellingS}}, \code{\link{FRBhotellingMM}} }
 \examples{
@@ -33,7 +39,7 @@ recognize the extent to which each variable is responsible for the overall devia
 ## One sample robust Hotelling test
 data(ForgedBankNotes)
 samplemean <- apply(ForgedBankNotes, 2, mean)
-res = FRBhotellingS(ForgedBankNotes, mu0=samplemean)
+res = FRBhotellingS(ForgedBankNotes, mu0=samplemean,R=99)
 
 plot(res)
 
@@ -46,12 +52,12 @@ plot(res)
 
 # For comparison, the hypothesis would be accepted if only the first three
 # variables were considered:
-res = FRBhotellingS(ForgedBankNotes[,1:3], mu0=samplemean[1:3])
+res = FRBhotellingS(ForgedBankNotes[,1:3], mu0=samplemean[1:3],R=99)
 plot(res)
 
 ## Two sample robust Hotelling test
 data(hemophilia)
-res <- FRBhotellingMM(cbind(AHFactivity,AHFantigen)~gr,data=hemophilia)
+res <- FRBhotellingMM(cbind(AHFactivity,AHFantigen)~gr,data=hemophilia,R=99)
 plot(res)
 
 # From the confidence limits it can be seen that the significant difference

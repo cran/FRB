@@ -48,7 +48,8 @@ Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verl
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
 regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
-}
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.}
 }
 \author{ Ella Roelant, Gert Willems and Stefan Van Aelst}
 %\note{ ~~further notes~~ 
@@ -66,7 +67,7 @@ Y2 <- matrix(rnorm(50*5), ncol=5)
 Ybig <- rbind(Y1,Y2)
 grp <- c(rep(1,50),rep(2,50))
 MMests <- MMest_twosample(Ybig, grp)
-bootresult <- MMboot_twosample(Ybig, grp, R=1000, ests=MMests)
+bootresult <- MMboot_twosample(Ybig, grp, R=500, ests=MMests)
 }  
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

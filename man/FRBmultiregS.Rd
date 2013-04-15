@@ -105,6 +105,8 @@ bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71.
 regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
 \item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
 inference. \emph{Statistica Sinica}, \bold{15}, 981-1001.
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
 }
 }
 \author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
@@ -119,8 +121,8 @@ school.y <- data.matrix(schooldata[,6:8])
 #based on 999 bootstrap samples:
 Sres <- FRBmultiregS(school.x, school.y, R=999, bdp = 0.25, conf = 0.99)
 #or, equivalently using the formula interface
-Sres <- FRBmultiregS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
-        R=999, bdp = 0.25, conf = 0.99)
+\dontrun{Sres <- FRBmultiregS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
+        R=999, bdp = 0.25, conf = 0.99)}
           
 #the print method displays the coefficient estimates 
 Sres

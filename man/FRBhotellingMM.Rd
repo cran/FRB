@@ -91,7 +91,9 @@ applications to discriminant analysis. \emph{Journal of Multivariate Analysis}, 
 Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verlag, 709--719.
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
-}
+\item S. Van Aelst and G. Willems (2013). Fast and Robust Bootstrap for Multivariate Inference: The R Package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Ella Roelant, Stefan Van Aelst and Gert Willems }
 %\note{ ~~further notes~~ 
@@ -104,12 +106,12 @@ bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71.
 ## One sample robust Hotelling test
 data(delivery)
 delivery.x <- delivery[,1:2]
-FRBhotellingMM(delivery.x)
+FRBhotellingMM(delivery.x,R=199)
 
 ## One sample robust Hotelling test
 data(ForgedBankNotes)
 samplemean <- apply(ForgedBankNotes, 2, mean)
-res = FRBhotellingMM(ForgedBankNotes, mu0=samplemean)
+res = FRBhotellingMM(ForgedBankNotes, mu0=samplemean,R=199)
 res
 # Note that the test rejects the hypothesis that the true mean equals the
 # sample mean; this is due to outliers in the data (i.e. the robustly estimated
@@ -133,13 +135,13 @@ x <- hemophilia[which(grp==levels(grp)[1]),1:2]
 y <- hemophilia[which(grp==levels(grp)[2]),1:2]
 
 #using the pooled covariance matrix to estimate the common covariance matrix
-res <- FRBhotellingMM(x,y,method="pool")
+\dontrun{res <- FRBhotellingMM(x,y,method="pool")}
 
 #using the estimator of He and Fung to estimate the common covariance matrix
-res <- FRBhotellingMM(x,y,method="HeFung")
+res <- FRBhotellingMM(x,y,method="HeFung",R=199)
 
 # or using the formula interface
-res <- FRBhotellingMM(as.matrix(hemophilia[,-3])~hemophilia[,3],method="HeFung")
+\dontrun{res <- FRBhotellingMM(as.matrix(hemophilia[,-3])~hemophilia[,3],method="HeFung")}
 
 # From the confidence limits it can be seen that the significant difference
 # is mainly caused by the AHFactivity variable. The graphical display helps too:

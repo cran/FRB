@@ -93,7 +93,9 @@ Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verl
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 \item V. Todorov and P. Filzmoser (2009) An Object-Oriented Framework for Robust Multivariate Analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
-}
+\item S. Van Aelst and G. Willems (2013). Fast and Robust Bootstrap for Multivariate Inference: The R Package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Ella Roelant, Stefan Van Aelst and Gert Willems }
 %\note{ ~~further notes~~ 
@@ -105,12 +107,12 @@ bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71.
 ## One sample robust Hotelling test
 data(delivery)
 delivery.x <- delivery[,1:2]
-FRBhotellingS(delivery.x)
+FRBhotellingS(delivery.x,R=199)
 
 ## One sample robust Hotelling test
 data(ForgedBankNotes)
 samplemean <- apply(ForgedBankNotes, 2, mean)
-res = FRBhotellingS(ForgedBankNotes, mu0=samplemean)
+res = FRBhotellingS(ForgedBankNotes, mu0=samplemean,R=199)
 res
 # Note that the test rejects the hypothesis that the true mean equals the
 # sample mean; this is due to outliers in the data (i.e. the robustly estimated
@@ -134,13 +136,13 @@ x <- hemophilia[which(grp==levels(grp)[1]),1:2]
 y <- hemophilia[which(grp==levels(grp)[2]),1:2]
 
 #using the pooled covariance matrix to estimate the common covariance matrix
-res = FRBhotellingS(x,y,method="pool")
+\dontrun{res = FRBhotellingS(x,y,method="pool")}
 
 #using the estimator of He and Fung to estimate the common covariance matrix
-res = FRBhotellingS(x,y,method="HeFung")
+res = FRBhotellingS(x,y,method="HeFung",R=199)
 
 # or using the formula interface
-res = FRBhotellingS(as.matrix(hemophilia[,-3])~hemophilia[,3],method="HeFung")
+\dontrun{res = FRBhotellingS(as.matrix(hemophilia[,-3])~hemophilia[,3],method="HeFung",R=99)}
 
 # From the confidence limits it can be seen that the significant difference
 # is mainly caused by the AHFactivity variable. The graphical display helps too:

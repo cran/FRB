@@ -40,6 +40,12 @@ The \code{print} method displays in a \dQuote{familiar way} the components of th
   \item{conf}{confidence level that was used}
   \item{digits}{ number of digits for printing }
 }
+\references{ 
+\itemize{
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
+}
 \author{ Gert Willems, Ella Roelant and Stefan Van Aelst }
 \seealso{ \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}}, \code{\link{FRBmultiregGS}},  \code{\link{print.FRBmultireg}}, \code{\link{plot.FRBmultireg}} }
 \examples{
@@ -47,11 +53,11 @@ The \code{print} method displays in a \dQuote{familiar way} the components of th
 data(schooldata)
 
 MMres <- FRBmultiregMM(cbind(reading,mathematics,selfesteem)~., data=schooldata,
-R=999, conf = 0.99)
+R=199, conf = 0.99,nsamp=200)
 summary(MMres)  # -> print.summary.FRBmultireg() method
 
 GSres <- FRBmultiregGS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
-bdp = 0.25)
+bdp = 0.25,R=199,nsamp=50)
 summary(GSres, confmethod="both")  # -> print.summary.FRBmultireg() method
 
 }

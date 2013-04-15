@@ -39,8 +39,10 @@ A list containing:
 with fast and robust bootstrap. \emph{Journal of the American Statistical Association}, \bold{101}, 1198--1211.
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
-\item V. Todorov and P. Filzmoser (2009) An Object-Oriented Framework for Robust Multivariate Analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
-}
+\item V. Todorov and P. Filzmoser (2009) An object-oriented framework for robust multivariate analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
 %\note{ ~~further notes~~ 

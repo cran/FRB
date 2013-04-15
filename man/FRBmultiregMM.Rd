@@ -101,7 +101,9 @@ regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
 \emph{The Annals of Statistics}, \bold{28}, 1219-1243. 
 \item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
 inference. \emph{Statistica Sinica}, \bold{15}, 981-1001.
-}
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Gert Willems, stefan Van Aelst and Ella Roelant }
 %\note{ ~~further notes~~ 
@@ -119,8 +121,8 @@ school.y <- data.matrix(schooldata[,6:8])
 #based on 999 bootstrap samples:
 MMres <- FRBmultiregMM(school.x, school.y, R=999, conf = 0.95)
 #or, equivalently using the formula interface
-MMres <- FRBmultiregMM(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
-              R=999, conf = 0.95)
+\dontrun{MMres <- FRBmultiregMM(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
+              R=999, conf = 0.95)}
 
 #the print method displays the coefficient estimates 
 MMres

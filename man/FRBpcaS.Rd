@@ -104,8 +104,10 @@ with fast and robust bootstrap. \emph{Journal of the American Statistical Associ
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
 regression. \emph{The Annals of Statistics}, \bold{30}, 556-582. 
-\item V. Todorov and P. Filzmoser (2009) An Object-Oriented Framework for Robust Multivariate Analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
-}
+\item V. Todorov and P. Filzmoser (2009) An object-oriented framework for robust multivariate analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
 %\note{ ~~further notes~~ 
@@ -120,7 +122,7 @@ data(ForgedBankNotes)
 
 Spcares <- FRBpcaS(ForgedBankNotes, R=999, bdp=0.25, conf=0.95)
 # or using the formula interface
-Spcares <- FRBpcaMM(~.,data=ForgedBankNotes, R=999, conf=0.95)
+\dontrun{Spcares <- FRBpcaMM(~.,data=ForgedBankNotes, R=999, conf=0.95)}
 
 # the simple print method shows the standard deviations with confidence limits:
 Spcares

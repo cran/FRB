@@ -24,6 +24,12 @@ between the two location vectors), and the robust estimates for the location vec
 \value{
   \code{summary.FRBhot} simply returns its two arguments in a list.
 }
+\references{ 
+\itemize{
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
+}
 \author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
 \seealso{ \code{\link{FRBhotellingS}}, \code{\link{FRBhotellingMM}},   \code{\link{plot.FRBhot}} }
 \examples{

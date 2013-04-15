@@ -97,7 +97,9 @@ Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press
 \item E. Roelant, S. Van Aelst and  C. Croux (2009) Multivariate Generalized S-estimators. \emph{Journal of Multivariate Analysis}, \bold{100}, 876--887.
 \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
-}
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Ella Roelant, Stefan Van Aelst and Gert Willems }
 %\note{ ~~further notes~~ 
@@ -111,12 +113,12 @@ data(schooldata)
 school.x <- data.matrix(schooldata[,1:5])
 school.y <- data.matrix(schooldata[,6:8])
 
-#computes 25\% breakdown point GS-estimate and 99\% confidence intervals 
-#based on 999 bootstrap samples:
-GSres <- FRBmultiregGS(school.x, school.y, R=999, bdp = 0.25, conf = 0.99)
-#or, equivalently using the formula interface
-GSres <- FRBmultiregGS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
-          R=999, bdp = 0.25, conf = 0.99)
+#computes 25\% breakdown point GS-estimate and 80\% confidence intervals 
+#based on 99 bootstrap samples:
+GSres <- FRBmultiregGS(school.x, school.y, R=99, bdp = 0.25, conf = 0.8,nsamp=50)
+#or using the formula interface
+\dontrun{GSres <- FRBmultiregGS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
+          bdp = 0.25, conf = 0.8,R=99)}
 
 #the print method just displays the coefficient estimates
 GSres

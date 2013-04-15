@@ -45,7 +45,9 @@ Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verl
 bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
 regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
-}
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Ella Roelant, Gert Willems and Stefan Van Aelst}
 %\note{ ~~further notes~~ 

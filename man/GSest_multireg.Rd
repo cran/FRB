@@ -61,7 +61,9 @@ The returned object inherits from class \code{mlm} such that the standard \code{
 \item E. Roelant, S. Van Aelst and  C. Croux (2009) Multivariate Generalized S-estimators. \emph{Journal of Multivariate Analysis}, \bold{100}, 876--887.
 \item M. Salibian-Barrera and V. Yohai (2006) A fast algorithm for S-regression estimates. 
 \emph{Journal of Computational and Graphical Statistics}, \bold{15}, 414-427. 
-}
+\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
+        }
 }
 \author{ Ella Roelant, Gert Willems and Stefan Van Aelst}
 %\note{ ~~further notes~~ 
@@ -73,9 +75,9 @@ The returned object inherits from class \code{mlm} such that the standard \code{
 data(schooldata)
 school.x <- data.matrix(schooldata[,1:5])
 school.y <- data.matrix(schooldata[,6:8])
-GSest <- GSest_multireg(school.x,school.y)
+GSest <- GSest_multireg(school.x,school.y,nsamp=50)
 # or using the formula interface
-GSests <- GSest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)
+\dontrun{GSests <- GSest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

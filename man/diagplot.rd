@@ -77,8 +77,10 @@ covariance estimate \eqn{\hat{\Sigma}}{\Sigma}.
 %\item G. Pison and S. Van Aelst (2002). Analyzing robust multivariate methods
 %with a diagnostic plot.  In \emph{Proceedings in Computational Statistics 2002 (W.
 %Hardle and B. Ronz, eds.)}, 165-170.
-\item  S. Van Aelst and G. Willems (2005). Multivariate regression S-estimators for robust estimation and
-inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
+\item  S. Van Aelst and G. Willems (2005). Multivariate Regression S-Estimators for Robust Estimation and
+Inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
+\item S. Van Aelst and G. Willems (2013). Fast and Robust Bootstrap for Multivariate Inference: The R Package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+        URL: \url{http://www.jstatsoft.org/v53/i03/}.
 }
 }
 \author{ Gert Willems and Ella Roelant }
@@ -94,19 +96,23 @@ inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
 data(schooldata)
 MMres <- MMest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)
 diagplot(MMres)
-# a large 'bad leverage' outlier should be noticeable (observation59)
+# a large 'bad leverage' outlier should be noticeable (observation 59)
 
 # for PCA:
+\dontrun{
 data(ForgedBankNotes)
-MMres <- FRBpcaMM(ForgedBankNotes, R=10)
-diagplot(MMres)
+MMres <- FRBpcaMM(ForgedBankNotes)
+diagplot(MMres)}
+
 # a group of 15 fairly strong outliers can be seen which apparently would have
 # a large general influence on a classical PCA analysis
 
 # for Hotelling tests (two-sample)
+\dontrun{
 data(hemophilia)
-MMres <- FRBhotellingMM(cbind(AHFactivity,AHFantigen)~gr,data=hemophilia, R=10)
-diagplot(MMres)
+MMres <- FRBhotellingMM(cbind(AHFactivity,AHFantigen)~gr,data=hemophilia)
+diagplot(MMres)}
+
 # the data seem practically outlier-free
 
 
