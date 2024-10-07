@@ -1,5 +1,3 @@
-Sest_twosample<-function(X, groups, bdp=0.5, control=Scontrol(...),...)
-{
 # fast S algorithm for two-sample location and common scatter
 # INPUT:
 # X = data matrix
@@ -12,72 +10,69 @@ Sest_twosample<-function(X, groups, bdp=0.5, control=Scontrol(...),...)
 # result$Sigma = S-estimate covariance matrix
 # result$scale = S-estimate scale
 
-
-
-# --------------------------------------------------------------------
-
-rhobiweight <- function(x,c)
-{
-# Computes Tukey's biweight rho function with constant c for all values in x
-
-hulp <- x^2/2 - x^4/(2*c^2) + x^6/(6*c^4)
-rho <- hulp*(abs(x)<c) + c^2/6*(abs(x)>=c)
-
-return(rho)
-}
-
-# --------------------------------------------------------------------
-
-psibiweight <- function(x,c)
-{
-# Computes Tukey's biweight psi function with constant c for all values in x
-
-hulp <- x - 2*x^3/(c^2) + x^5/(c^4)
-psi <- hulp*(abs(x)<c)
-
-return(psi)
-}
-
-# --------------------------------------------------------------------
-
-scaledpsibiweight <- function(x,c)
-{
-# Computes Tukey's biweight psi function with constant c for all values in x
-
-hulp <- 1 - 2*x^2/(c^2) + x^4/(c^4)
-psi <- hulp*(abs(x)<c)
-
-return(psi)
-}
-
-# --------------------------------------------------------------------
-
-vecop <- function(mat) {
-# performs vec-operation (stacks colums of a matrix into column-vector)
-
-nr <- nrow(mat)
-nc <- ncol(mat)
-
-vecmat <- rep(0,nr*nc)
-for (col in 1:nc) {
-    startindex <- (col-1)*nr+1
-    vecmat[startindex:(startindex+nr-1)] <- mat[,col]
-}
-return(vecmat)
-}
-
-# --------------------------------------------------------------------
-
-reconvec <- function(vec,ncol) {
-# reconstructs vecop'd matrix
-
-lcol <- length(vec)/ncol
-rec <- matrix(0,lcol,ncol)
-for (i in 1:ncol)
-    rec[,i] <- vec[((i-1)*lcol+1):(i*lcol)]
-
-return(rec)
-}
+Sest_twosample<-function(X, groups, bdp=0.5, control=Scontrol(...), ...) {
+    rhobiweight <- function(x,c)
+    {
+    # Computes Tukey's biweight rho function with constant c for all values in x
+    
+    hulp <- x^2/2 - x^4/(2*c^2) + x^6/(6*c^4)
+    rho <- hulp*(abs(x)<c) + c^2/6*(abs(x)>=c)
+    
+    return(rho)
+    }
+    
+    # --------------------------------------------------------------------
+    
+    psibiweight <- function(x,c)
+    {
+    # Computes Tukey's biweight psi function with constant c for all values in x
+    
+    hulp <- x - 2*x^3/(c^2) + x^5/(c^4)
+    psi <- hulp*(abs(x)<c)
+    
+    return(psi)
+    }
+    
+    # --------------------------------------------------------------------
+    
+    scaledpsibiweight <- function(x,c)
+    {
+    # Computes Tukey's biweight psi function with constant c for all values in x
+    
+    hulp <- 1 - 2*x^2/(c^2) + x^4/(c^4)
+    psi <- hulp*(abs(x)<c)
+    
+    return(psi)
+    }
+    
+    # --------------------------------------------------------------------
+    
+    vecop <- function(mat) {
+    # performs vec-operation (stacks colums of a matrix into column-vector)
+    
+    nr <- nrow(mat)
+    nc <- ncol(mat)
+    
+    vecmat <- rep(0,nr*nc)
+    for (col in 1:nc) {
+        startindex <- (col-1)*nr+1
+        vecmat[startindex:(startindex+nr-1)] <- mat[,col]
+    }
+    return(vecmat)
+    }
+    
+    # --------------------------------------------------------------------
+    
+    reconvec <- function(vec,ncol) {
+    # reconstructs vecop'd matrix
+    
+    lcol <- length(vec)/ncol
+    rec <- matrix(0,lcol,ncol)
+    for (i in 1:ncol)
+        rec[,i] <- vec[((i-1)*lcol+1):(i*lcol)]
+    
+    return(rec)
+    }
 
 #------------------------------------------------------------------------------#
 #                function needed to determine constant in biweight             #
@@ -163,76 +158,69 @@ return(sc)
 #-------------------------------------------------------------------------
 IRLSstep<-function(X, groups, initialmu1, initialmu2, initialGamma, initialscale, k, c, b, convTol)
 {
-# performs k steps of IRLS (or stops at convergence)
-
-#convTol <- 1e-10
-n<-nrow(X)
-p<-ncol(X)
-
-X1 <- X[groups==1,,drop=FALSE]
-X2 <- X[groups==2,,drop=FALSE]
-n1 <- sum(groups==1)
-n2 <- sum(groups==2)
-
-mu1 <- initialmu1
-mu2 <- initialmu2
-R1 <- X1- matrix(rep(mu1,n1), n1, byrow=TRUE) 
-R2 <- X2- matrix(rep(mu2,n2), n2, byrow=TRUE)
-Res <- rbind(R1,R2)
-
-psres <- sqrt(mahalanobis(Res,rep(0,p),initialGamma))
-if (initialscale > 0)
-    {scale <- initialscale}
-else
-    {scale <- median(psres)/.6745}
-
-iter <- 0
-mudiff <- 1
-
-while ( (mudiff > convTol) & (iter < k) ) {
-    iter <- iter + 1
+    # performs k steps of IRLS (or stops at convergence)
     
-    # first update the scale by one-step approximation:
-    scale <- sqrt(scale^2 * mean(rhobiweight(psres/scale,c))/b)
+    #convTol <- 1e-10
+    n<-nrow(X)
+    p<-ncol(X)
     
+    X1 <- X[groups==1,,drop=FALSE]
+    X2 <- X[groups==2,,drop=FALSE]
+    n1 <- sum(groups==1)
+    n2 <- sum(groups==2)
     
-    w <- scaledpsibiweight(psres/scale,c)
-    sqrtw <- sqrt(w)
-    if(qr(Res[w>0,])$rank < p) stop("Too many points on a hyperplane!")
-    if (n1==1)
-     {mu1new <- t(as.matrix((w[1:n1]*X1))) / as.vector(crossprod(sqrtw[1:n1]))
-      mu2new <- crossprod(w[(n1+1):(n1+n2)], X2) / as.vector(crossprod(sqrtw[(n1+1):(n1+n2)]))}
-    if (n2==1)
-     {mu1new <- crossprod(w[1:n1], X1) / as.vector(crossprod(sqrtw[1:n1]))
-     mu2new <- t(as.matrix((w[(n1+1):(n1+n2)]* X2))) / as.vector(crossprod(sqrtw[(n1+1):(n1+n2)]))}
-    if ((n1>1) & (n2>1))
-     {mu1new <- crossprod(w[1:n1], X1) / as.vector(crossprod(sqrtw[1:n1]))
-     mu2new <- crossprod(w[(n1+1):(n1+n2)], X2) / as.vector(crossprod(sqrtw[(n1+1):(n1+n2)]))}
-    wbig <- matrix(rep(sqrtw,p),ncol=p) 
-    wRes <- Res * wbig  
-    newGamma <- crossprod(wRes)
-    newGamma <- det(newGamma)^(-1/p)*newGamma
+    mu1 <- initialmu1
+    mu2 <- initialmu2
+    R1 <- X1- matrix(rep(mu1,n1), n1, byrow=TRUE) 
+    R2 <- X2- matrix(rep(mu2,n2), n2, byrow=TRUE)
+    Res <- rbind(R1,R2)
     
-    R1new <- X1-matrix(rep(mu1new,n1), n1,byrow=TRUE)
-    R2new <- X2-matrix(rep(mu2new,n2), n2,byrow=TRUE)
-    Res <- rbind(R1new,R2new)
-    mudiff <- max(sum((mu1new-mu1)^2)/sum(mu1^2),sum((mu2new-mu2)^2)/sum(mu2^2)) # use 'sum' as a kind of norm
+    psres <- sqrt(mahalanobis(Res,rep(0,p),initialGamma))
+    if (initialscale > 0)
+        {scale <- initialscale}
+    else
+        {scale <- median(psres)/.6745}
     
+    iter <- 0
+    mudiff <- 1
     
-    mu1 <- mu1new
-    mu2 <- mu2new
-    psres <- sqrt(mahalanobis(Res,rep(0,p),newGamma))
+    while ( (mudiff > convTol) & (iter < k) ) {
+        iter <- iter + 1
+        
+        # first update the scale by one-step approximation:
+        scale <- sqrt(scale^2 * mean(rhobiweight(psres/scale,c))/b)
+        
+        
+        w <- scaledpsibiweight(psres/scale,c)
+        sqrtw <- sqrt(w)
+        if(qr(Res[w>0,])$rank < p) stop("Too many points on a hyperplane!")
+        if (n1==1)
+         {mu1new <- t(as.matrix((w[1:n1]*X1))) / as.vector(crossprod(sqrtw[1:n1]))
+          mu2new <- crossprod(w[(n1+1):(n1+n2)], X2) / as.vector(crossprod(sqrtw[(n1+1):(n1+n2)]))}
+        if (n2==1)
+         {mu1new <- crossprod(w[1:n1], X1) / as.vector(crossprod(sqrtw[1:n1]))
+         mu2new <- t(as.matrix((w[(n1+1):(n1+n2)]* X2))) / as.vector(crossprod(sqrtw[(n1+1):(n1+n2)]))}
+        if ((n1>1) & (n2>1))
+         {mu1new <- crossprod(w[1:n1], X1) / as.vector(crossprod(sqrtw[1:n1]))
+         mu2new <- crossprod(w[(n1+1):(n1+n2)], X2) / as.vector(crossprod(sqrtw[(n1+1):(n1+n2)]))}
+        wbig <- matrix(rep(sqrtw,p),ncol=p) 
+        wRes <- Res * wbig  
+        newGamma <- crossprod(wRes)
+        newGamma <- det(newGamma)^(-1/p)*newGamma
+        
+        R1new <- X1-matrix(rep(mu1new,n1), n1,byrow=TRUE)
+        R2new <- X2-matrix(rep(mu2new,n2), n2,byrow=TRUE)
+        Res <- rbind(R1new,R2new)
+        mudiff <- max(sum((mu1new-mu1)^2)/sum(mu1^2),sum((mu2new-mu2)^2)/sum(mu2^2)) # use 'sum' as a kind of norm
+        
+        
+        mu1 <- mu1new
+        mu2 <- mu2new
+        psres <- sqrt(mahalanobis(Res,rep(0,p),newGamma))
+    }
+    
+    return(list(mu1=mu1, mu2=mu2, Gamma=newGamma, scale=scale))
 }
-return(list(mu1=mu1,mu2=mu2,Gamma=newGamma,scale=scale))
-}
-
-
-
-#-------------------------------------------------------------------------
-#-                               main function                            -
-#-------------------------------------------------------------------------
-# set the seed for the subsampling...:
-#set.seed(10)
 
 X <- as.matrix(X)
 n <- nrow(X)
@@ -396,7 +384,8 @@ psres <- sqrt(mahalanobis(rbind(R1,R2),rep(0,p),superbestgamma))/superbestscale
 w <- scaledpsibiweight(psres,c)
 outFlag <- (psres > sqrt(qchisq(.975, p)))
 
-return(list(Mu1=superbestmu1,Mu2=superbestmu2,Gamma=superbestgamma,Sigma = superbestscale^2*superbestgamma,scale=superbestscale,c=c,b=b,w=w,outFlag=outFlag))
+    list(Mu1=superbestmu1, Mu2=superbestmu2, Gamma=superbestgamma, Sigma=superbestscale^2*superbestgamma,
+    scale=superbestscale, c=c, b=b, w=w, outFlag=outFlag)
 }
 
 

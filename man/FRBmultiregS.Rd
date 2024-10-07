@@ -93,22 +93,28 @@ The returned object inherits from class \code{mlm} such that the standard \code{
 }
 \references{
 \itemize{ 
-\item P.L. Davies (1987) Asymptotic behavior of S-estimates of multivariate location parameters and dispersion
-matrices. \emph{The Annals of Statistics}, \bold{15}, 1269-1292.
-\item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. Cambridge Series in
-Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
-\item M. Salibian-Barrera and V. Yohai (2006) A fast algorithm for S-regression estimates. 
-\emph{Journal of Computational and Graphical Statistics}, \bold{15}, 414-427. 
-\item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
-\item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
-inference. \emph{Statistica Sinica}, \bold{15}, 981-1001.
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-}
-}
+    \item P.L. Davies (1987) Asymptotic behavior of S-estimates of multivariate location parameters and dispersion matrices. 
+    \emph{The Annals of Statistics}, \bold{15}, 1269-1292.
+    
+    \item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. 
+    Cambridge Series in Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
+    
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust bootstrap. 
+    \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
+    
+    \item M. Salibian-Barrera and V. Yohai (2006) A fast algorithm for S-regression estimates. 
+    \emph{Journal of Computational and Graphical Statistics}, \bold{15}, 414-427. 
+    
+    \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of regression. 
+    \emph{The Annals of Statistics}, \bold{30}, 556-582.
+    
+    \item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and inference. 
+    \emph{Statistica Sinica}, \bold{15}, 981-1001.
+
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
 \author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
 \seealso{ \code{\link{summary.FRBmultireg}}, \code{\link{plot.FRBmultireg}}, \code{\link{Sboot_multireg}}, 
 \code{\link{Sest_multireg}},  \code{\link{FRBmultiregMM}},  \code{\link{FRBmultiregGS}}, \code{\link{Scontrol}} }
@@ -117,45 +123,44 @@ data(schooldata)
 school.x <- data.matrix(schooldata[,1:5])
 school.y <- data.matrix(schooldata[,6:8])
 
-#computes 25\% breakdown point S-estimate and 99\% confidence intervals 
-#based on 999 bootstrap samples:
+##  computes 25\% breakdown point S-estimate and 99\% confidence intervals 
+##  based on 999 bootstrap samples:
 Sres <- FRBmultiregS(school.x, school.y, R=999, bdp = 0.25, conf = 0.99)
-#or, equivalently using the formula interface
-\dontrun{Sres <- FRBmultiregS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
-        R=999, bdp = 0.25, conf = 0.99)}
+
+##  or, equivalently using the formula interface
+\donttest{
+    Sres <- FRBmultiregS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
+            R=999, bdp = 0.25, conf = 0.99)
+}
           
-#the print method displays the coefficient estimates 
+##  the print method displays the coefficient estimates 
 Sres
 
-#the summary function additionally displays the bootstrap standard errors and p-values
-#("BCA" method by default)
+##  the summary function additionally displays the bootstrap standard errors and p-values
+##  ("BCA" method by default)
 summary(Sres)
 
 summary(Sres, confmethod="basic")
                                                               
-#ask explicitely for the coefficient matrix:
+##  ask explicitely for the coefficient matrix:
 Sres$coefficients
-# or equivalently,
+
+## or equivalently,
 coef(Sres)
-#For the error covariance matrix:
+
+##  For the error covariance matrix:
 Sres$Sigma
                                                               
-#plot some bootstrap histograms for the coefficient estimates 
-#(with "BCA" intervals by default) 
+##  plot some bootstrap histograms for the coefficient estimates 
+##  (with "BCA" intervals by default) 
 plot(Sres, expl=c("education", "occupation"), resp=c("selfesteem","reading"))
 
-#plot bootstrap histograms for all coefficient estimates
+##  plot bootstrap histograms for all coefficient estimates
 plot(Sres)
-#probably the plot-function has made a selection of coefficients to plot here, 
-#since 'all' was too many to  fit on one page, see help(plot.FRBmultireg); 
-#this is platform-dependent
-%# this may give an error if the number of coefficients to plot is too large to fit on one page; 
-%# use arguments expl and resp
 
-%# diagnostic plot for outlier detection:
-%plot(Sres, which=1)
-%# this may take a while, since the function needs to compute S-estimates 
-%# for the X matrix
+##  probably the plot-function has made a selection of coefficients to plot here, 
+##  since 'all' was too many to  fit on one page, see help(plot.FRBmultireg); 
+##  this is platform-dependent
 }
 
 \keyword{ multivariate }% __ONLY ONE__ keyword per line

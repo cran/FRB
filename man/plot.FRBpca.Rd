@@ -71,29 +71,33 @@ are shown, where the variables were ordered according to the absolute value of t
 variables for that particular PC are shown).
  
 }
+\value{
+  Returns invisibly the first argument.
+}
 \references{ 
 \itemize{
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
 
 \author{ Gert Willems and Ella Roelant }
 \seealso{ \code{\link{FRBpcaS}}, \code{\link{FRBpcaMM}},  \code{\link{summary.FRBpca}} }
 \examples{
 
-data(ForgedBankNotes)
-
-MMpcares <- FRBpcaMM(ForgedBankNotes, R=999, conf=0.95)
-plot(MMpcares) 
-
-# a closer look at the screeplot, specifying basic bootstrap intervals
-plotFRBvars(MMpcares, cumul=0, confmethod="basic")
-
-# plots the bootstrap angles for the first PC only
-plotFRBangles(MMpcares, pcs=1)
-
-# plots the loadings, with basic bootstrap intervals, for *all* the PCs 
-plotFRBloadings(MMpcares, confmethod="basic", pcs=1:ncol(ForgedBankNotes))
-
+\donttest{
+    data(ForgedBankNotes)
+    
+    MMpcares <- FRBpcaMM(ForgedBankNotes, R=999, conf=0.95)
+    plot(MMpcares) 
+    
+    ## a closer look at the screeplot, specifying basic bootstrap intervals
+    plotFRBvars(MMpcares, cumul=0, confmethod="basic")
+    
+    ## plots the bootstrap angles for the first PC only
+    plotFRBangles(MMpcares, pcs=1)
+    
+    ## plots the loadings, with basic bootstrap intervals, for *all* the PCs 
+    plotFRBloadings(MMpcares, confmethod="basic", pcs=1:ncol(ForgedBankNotes))
+}
 }

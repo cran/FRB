@@ -83,30 +83,31 @@ An object of class \code{FRBhot} which extends class \code{htest} and contains a
 }
 \references{ 
 \itemize{
-\item X. He and W.K. Fung (2000) High breakdown estimation for multiple populations with 
-applications to discriminant analysis. \emph{Journal of Multivariate Analysis}, \bold{72}, 151--162.
-\item R.A. Johnson, D.W. Wichern (1988) Applied Multivariate Statistical Analysis, 
-2nd Edition, Prentice-Hall.
-\item E. Roelant, S. Van Aelst and G. Willems, (2008) Fast Bootstrap for Robust Hotelling Tests, COMPSTAT 2008: 
-Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verlag, 709--719.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
-\item S. Van Aelst and G. Willems (2013). Fast and Robust Bootstrap for Multivariate Inference: The R Package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
-\author{ Ella Roelant, Stefan Van Aelst and Gert Willems }
-%\note{ ~~further notes~~ 
+    \item X. He and W.K. Fung (2000) High breakdown estimation for multiple populations with applications to discriminant analysis. 
+    \emph{Journal of Multivariate Analysis}, \bold{72}, 151--162.
+    
+    \item R.A. Johnson, D.W. Wichern (1988) Applied Multivariate Statistical Analysis, 
+    2nd Edition, Prentice-Hall.
+    
+    \item E. Roelant, S. Van Aelst and G. Willems, (2008) Fast Bootstrap for Robust Hotelling Tests, COMPSTAT 2008: 
+    Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verlag, 709--719.
+    
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust  bootstrap. 
+    \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
 
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
+\author{ Ella Roelant, Stefan Van Aelst and Gert Willems }
+
 \seealso{ \code{\link{plot.FRBhot}}, \code{\link{summary.FRBhot}}, \code{\link{FRBhotellingS}}, \code{\link{MMcontrol}} }
 \examples{
 
 ## One sample robust Hotelling test
-data(delivery)
-delivery.x <- delivery[,1:2]
-FRBhotellingMM(delivery.x,R=199)
+data(delivery, package="robustbase")
+delivery.x <- delivery[, 1:2]
+FRBhotellingMM(delivery.x, R=199)
 
 ## One sample robust Hotelling test
 data(ForgedBankNotes)
@@ -122,26 +123,25 @@ plot(res)
 # It is clear from the (scaled) simultaneous confidence limits that the rejection
 # of the hypothesis is due to the differences in variables Bottom and Diagonal
 
-%# For comparison, the hypothesis would be accepted if only the first three
-%# variables were considered:
-%\dontrun{
-%res = FRBhotellingMM(ForgedBankNotes[,1:3], mu0=samplemean[1:3])
-%plot(res)}
-
 ## Two sample robust Hotelling test
-data(hemophilia)
+data(hemophilia, package="rrcov")
 grp <-as.factor(hemophilia[,3])
 x <- hemophilia[which(grp==levels(grp)[1]),1:2]
 y <- hemophilia[which(grp==levels(grp)[2]),1:2]
 
 #using the pooled covariance matrix to estimate the common covariance matrix
-\dontrun{res <- FRBhotellingMM(x,y,method="pool")}
+\donttest{
+    res <- FRBhotellingMM(x, y, method="pool")
+}
+
 
 #using the estimator of He and Fung to estimate the common covariance matrix
 res <- FRBhotellingMM(x,y,method="HeFung",R=199)
 
 # or using the formula interface
-\dontrun{res <- FRBhotellingMM(as.matrix(hemophilia[,-3])~hemophilia[,3],method="HeFung")}
+\donttest{
+res <- FRBhotellingMM(as.matrix(hemophilia[,-3])~hemophilia[,3], method="HeFung")
+}
 
 # From the confidence limits it can be seen that the significant difference
 # is mainly caused by the AHFactivity variable. The graphical display helps too:
@@ -150,8 +150,7 @@ plot(res)
 # sample (it is omitted if the statistic exceeds 100)
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ htest }
-\keyword{ multivariate }% __ONLY ONE__ keyword per line
-\keyword{ robust }
+
+\keyword{htest}
+\keyword{multivariate}
+\keyword{robust}

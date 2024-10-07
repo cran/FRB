@@ -51,11 +51,16 @@ if (!is.null(x$bootest)) {
   #  if (nexpl>5 || nresp>5) warning("Large number of plots to fit on one page, may fail: consider specifying (fewer) variables in
   #  arguments 'expl' and 'resp'; or set 'onepage=FALSE'")
   #  
+
+    ## VT::05.10.2024: always restore pars()
+    oldpar <- par(no.readonly=TRUE)
+    on.exit(par(oldpar), add=TRUE)
+
    
-    # try whether all plots can fit on the page, otherwise lower the number of coefficients one by one...
+    ## try whether all plots can fit on the page, otherwise lower the number of coefficients one by one...
     par(mfrow=c(nexpl, nresp))
     a <- try(hist(1:R), silent=TRUE) ; devAskNewPage(ask = FALSE)
-    if (class(a)=="try-error") {
+    if(inherits(a, "try-error")) {
       DoesNotFit <- TRUE
       giveWarning <- TRUE
     }
@@ -68,11 +73,13 @@ if (!is.null(x$bootest)) {
       else nresp <- nresp - 1
       par(mfrow=c(nexpl, max(nresp,1)))
       a <- try(hist(1:R), silent=TRUE); 
-      if (class(a)!="try-error") DoesNotFit <- FALSE
+      if(!inherits(a, "try-error")) DoesNotFit <- FALSE
     }
-    if (nresp==0) stop("Something is wrong: plot margins too small?")
-    if (giveWarning) warning("Number of plots too large to fit on the page, subset was selected: consider specifying (fewer) 
-      variables in 'expl' and 'resp'; or enlarge graphics device; or set 'onepage=FALSE'")
+    if(nresp == 0) 
+        stop("Something is wrong: plot margins too small?")
+    if(giveWarning) 
+        warning("Number of plots too large to fit on the page, subset was selected: consider specifying (fewer) 
+            variables in 'expl' and 'resp'; or enlarge graphics device; or set 'onepage=FALSE'")
     
     par(mfrow=c(nexpl, nresp))
     for(i in 1:nexpl) {
@@ -108,7 +115,7 @@ if (!is.null(x$bootest)) {
     else rowcol <- c(ceiling(nexpl/3),3)
     par(mfrow=rowcol)
     a <- try(hist(1:R), silent=TRUE);  devAskNewPage(ask = FALSE)
-    if (class(a)=="try-error") {
+    if(inherits(a, "try-error")) {
       DoesNotFit <- TRUE
       giveWarning <- TRUE
     }
@@ -125,12 +132,14 @@ if (!is.null(x$bootest)) {
       else rowcol <- c(ceiling(nexpl/3),3)
       par(mfrow=rowcol)
       a <- try(hist(1:R), silent=TRUE)
-      if (class(a)!="try-error") DoesNotFit <- FALSE
+      if(!inherits(a, "try-error")) DoesNotFit <- FALSE
     }  
-    if (nexpl==0) stop("Something is wrong: plot margins too small?")
+    if(nexpl == 0) 
+        stop("Something is wrong: plot margins too small?")
   
-    if (giveWarning) warning("Number of plots too large to fit on the pages, subset was selected: consider specifying (fewer) 
-      variables in 'expl'; or enlarge graphics device")
+    if(giveWarning) 
+        warning("Number of plots too large to fit on the pages, subset was selected: consider specifying (fewer) 
+            variables in 'expl'; or enlarge graphics device")
   
     for(j in 1:nresp) {
       par(mfrow = rowcol)
@@ -162,5 +171,6 @@ else warning("Could not plot confidence intervals; FRB was not performed")
 
 devAskNewPage(ask = currentAsk) 
 
+invisible(x) 
 }
 

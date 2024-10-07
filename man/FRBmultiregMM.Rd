@@ -2,7 +2,9 @@
 \alias{FRBmultiregMM}
 \alias{FRBmultiregMM.default}
 \alias{FRBmultiregMM.formula}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\alias{print.FRBmultireg}
+\alias{predict.FRBmultireg}
+\alias{vcov.FRBmultireg}
 \title{MM-Estimates for Multivariate Regression with Bootstrap Inference}
 \description{Computes MM-estimates for multivariate regression together with standard errors, confidence intervals
 and p-values based on the Fast and Robust Bootstrap.
@@ -91,25 +93,26 @@ The returned object inherits from class \code{mlm} such that the standard \code{
 }
 \references{ 
 \itemize{
-\item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. Cambridge Series in
-Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
-\item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
-\item K.S. Tatsuoka and D.E. Tyler (2000) The uniqueness of S and M-functionals under non-elliptical distributions.
-\emph{The Annals of Statistics}, \bold{28}, 1219-1243. 
-\item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
-inference. \emph{Statistica Sinica}, \bold{15}, 981-1001.
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
+    \item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. 
+    Cambridge Series in Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
+    
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust bootstrap. 
+    \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
+    
+    \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of regression. 
+    \emph{The Annals of Statistics}, \bold{30}, 556-582.
+    
+    \item K.S. Tatsuoka and D.E. Tyler (2000) The uniqueness of S and M-functionals under non-elliptical distributions.
+    \emph{The Annals of Statistics}, \bold{28}, 1219-1243. 
+    
+    \item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and inference. 
+    \emph{Statistica Sinica}, \bold{15}, 981-1001.
+
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
 \author{ Gert Willems, stefan Van Aelst and Ella Roelant }
-%\note{ ~~further notes~~ 
-%
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
 \seealso{ \code{\link{summary.FRBmultireg}}, \code{\link{plot.FRBmultireg}}, \code{\link{MMboot_multireg}}, 
 \code{\link{MMest_multireg}},  \code{\link{FRBmultiregS}},  \code{\link{FRBmultiregGS}}, \code{\link{MMcontrol}} }
 \examples{
@@ -121,8 +124,10 @@ school.y <- data.matrix(schooldata[,6:8])
 #based on 999 bootstrap samples:
 MMres <- FRBmultiregMM(school.x, school.y, R=999, conf = 0.95)
 #or, equivalently using the formula interface
-\dontrun{MMres <- FRBmultiregMM(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
-              R=999, conf = 0.95)}
+\donttest{
+MMres <- FRBmultiregMM(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
+             R=999, conf = 0.95)
+}
 
 #the print method displays the coefficient estimates 
 MMres
@@ -149,13 +154,6 @@ plot(MMres)
 #probably the plot-function has made a selection of coefficients to plot here, 
 #since 'all' was too many to  fit on one page, see help(plot.FRBmultireg); 
 #this is platform-dependent
-%# this may give an error if the number of coefficients to plot is too large to fit on one page; 
-%# use arguments expl and resp
-
-%# diagnostic plot for outlier detection:
-%plot(MMres, which=1)
-%# this may take a while, since the function needs to compute MM-estimates 
-%# for the X matrix
 }
 
 \keyword{ multivariate }% __ONLY ONE__ keyword per line

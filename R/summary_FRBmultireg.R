@@ -190,7 +190,11 @@ predict.FRBmultireg <- function (object, newdata, ...)
     class(object) <- c(class(object), "mlm")
     object$qr <- qr(sqrt(object$weights) * object$X)
     object$rank <- object$qr$rank
-    pred=predict.mlm(object, newdata = newdata, ...)
+
+    ## VT::18.09.2024
+##    pred=stats::predict.mlm(object, newdata = newdata, ...)
+    pred=stats::predict(object, newdata = newdata, ...)     # should call predict.mlm
+
     if(ncol(pred)==1) pred=t(pred)
     pred
 }

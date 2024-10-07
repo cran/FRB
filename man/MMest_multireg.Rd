@@ -2,7 +2,6 @@
 \alias{MMest_multireg}
 \alias{MMest_multireg.default}
 \alias{MMest_multireg.formula}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{MM-Estimates for Multivariate Regression}
 \description{
   Computes MM-Estimates of multivariate regression, using initial S-estimates 
@@ -67,50 +66,56 @@ The returned object inherits from class \code{mlm} such that the standard \code{
   \item{SSigma}{S-estimate of the error covariance matrix}
   \item{SGamma}{S-estimate of the error shape matrix}
 }
-\references{ 
-\itemize{
-\item K.S. Tatsuoka and D.E. Tyler (2000) The uniqueness of S and M-functionals under non-elliptical distributions.
-\emph{The Annals of Statistics}, \bold{28}, 1219--1243. 
-\item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
-inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
-\author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
+\references{
+\itemize{ 
+    \item K.S. Tatsuoka and D.E. Tyler (2000), The uniqueness of S and M-functionals under non-elliptical distributions.
+    \emph{The Annals of Statistics}, \bold{28}, 1219--1243. 
 
-%\note{ ~~further notes~~ 
-%
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
+    \item S. Van Aelst and G. Willems (2005), Multivariate regression S-estimators for robust estimation and inference. 
+    \emph{Statistica Sinica}, \bold{15}, 981--1001.
+    
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
+
+\author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
 \seealso{  \code{\link{FRBmultiregMM}}, \code{\link{MMboot_multireg}},  \code{\link{Sest_multireg}}, \code{\link{MMcontrol}} }
+
 \examples{
 data(schooldata)
 school.x <- data.matrix(schooldata[,1:5])
 school.y <- data.matrix(schooldata[,6:8])
 
-# compute 95\% efficient MM-estimates
+## compute 95\% efficient MM-estimates
 MMres <- MMest_multireg(school.x,school.y)
-# or using the formula interface
-MMres <- MMest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)
 
+## or using the formula interface
+\donttest{
+    MMres <- MMest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)
+}
 
-# the MM-estimate of the regression coefficient matrix:
+## the MM-estimate of the regression coefficient matrix:
 MMres$coefficients
-# or alternatively 
+
+## or alternatively 
 coef(MMres)
 
-n <- nrow(schooldata)
-par(mfrow=c(2,1))
-# the estimates can be considered as weighted least squares estimates with the 
-# following implicit weights
-plot(1:n, MMres$weights)
-# Sres$outFlag tells which points are outliers based on whether or not their 
-# robust distance exceeds the .975 chi-square cut-off:
-plot(1:n, MMres$outFlag)
-# (see also the diagnostic plot in plotDiag())
+## Do plots
+\donttest{
+    n <- nrow(schooldata)
+    oldpar <- par(mfrow=c(2,1))
+    
+    ## the estimates can be considered as weighted least squares estimates with the 
+    ## following implicit weights
+    plot(1:n, MMres$weights)
+    
+    ## Sres$outFlag tells which points are outliers based on whether or not their 
+    ## robust distance exceeds the .975 chi-square cut-off:
+    plot(1:n, MMres$outFlag)
+    
+    ## (see also the diagnostic plot in plotDiag())
+    
+    par(oldpar)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-%\keyword{ ~kwd1 }
-%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+}

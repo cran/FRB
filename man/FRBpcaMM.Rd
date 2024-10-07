@@ -2,7 +2,7 @@
 \alias{FRBpcaMM}
 \alias{FRBpcaMM.default}
 \alias{FRBpcaMM.formula}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\alias{print.FRBpca}
 \title{ PCA based on Multivariate MM-estimators with Fast and Robust Bootstrap }
 \description{
   Performs principal components analysis based on the robust MM-estimate of the shape matrix. Additionally uses the Fast and Robust Bootstrap
@@ -96,25 +96,31 @@ The result of this call is also returned as the value \code{est}.
 }
 \references{ 
 \itemize{
-\item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. Cambridge Series in
-Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2006) PCA based on multivariate MM-estimators
-with fast and robust bootstrap. \emph{Journal of the American Statistical Association}, \bold{101}, 1198-1211.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
-\item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556-582.
-\item K.S. Tatsuoka and D.E. Tyler (2000) The uniqueness of S and M-functionals under non-elliptical distributions.
-\emph{The Annals of Statistics}, \bold{28}, 1219-1243
-\item V. Todorov and P. Filzmoser (2009) An object-oriented framework for robust multivariate analysis. \emph{Journal of Statistical Software}, \bold{32}, 1--47. URL \url{http://www.jstatsoft.org/v32/i03/}.
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.}
-}
+    \item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. 
+    Cambridge Series in Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
+    
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2006) PCA based on multivariate MM-estimators with fast and robust bootstrap. 
+    \emph{Journal of the American Statistical Association}, \bold{101}, 1198-1211.
+
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust bootstrap. 
+    \emph{Statistical Methods and Applications}, \bold{17}, 41-71.
+     
+    \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of regression. 
+    \emph{The Annals of Statistics}, \bold{30}, 556-582.
+
+    \item K.S. Tatsuoka and D.E. Tyler (2000) The uniqueness of S and M-functionals under non-elliptical distributions.
+    \emph{The Annals of Statistics}, \bold{28}, 1219-1243
+
+    \item V. Todorov and P. Filzmoser (2009), An Object Oriented Framework for Robust Multivariate Analysis. 
+    \emph{Journal of Statistical Software}, \bold{32}(3), 1--47.
+    \doi{10.18637/jss.v032.i03}.
+
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
+
 \author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
-%\note{ ~~further notes~~ 
-%
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
 \seealso{\code{\link{plot.FRBpca}}, \code{\link{summary.FRBpca}}, \code{\link{print.FRBpca}}, \code{\link{FRBpcaS}}, 
 \code{\link{MMboot_loccov}}, \code{\link{MMcontrol}} }
 \examples{
@@ -123,7 +129,9 @@ data(ForgedBankNotes)
 
 MMpcares <- FRBpcaMM(ForgedBankNotes, R=999, conf=0.95)
 # or using the formula interface
-\dontrun{MMpcares <- FRBpcaMM(~.,data=ForgedBankNotes, R=999, conf=0.95)}
+\donttest{
+MMpcares <- FRBpcaMM(~.,data=ForgedBankNotes, R=999, conf=0.95)
+}
 
 # the simple print method shows the standard deviations with confidence limits:
 MMpcares
@@ -143,16 +151,18 @@ sqrt( summary(MMpcares)$eigvals )
 # the eigenvectors and their standard errors:
 MMpcares$eigvec   # or prettier: summary(MMpcares)$eigvecs
 MMpcares$eigvec.SE
- 
-# take a look at the bootstrap distribution of the first eigenvalue
-hist(MMpcares$eigval.boot[1,])
-# that bootstrap distribution is used to compute confidence limits as depicted 
-# by the screeplot function:
-plotFRBvars(MMpcares, cumul=0)
 
-# all plots for the FRB-PCA result:
-plot(MMpcares)
-
+\donttest{ 
+    # take a look at the bootstrap distribution of the first eigenvalue
+    hist(MMpcares$eigval.boot[1,])
+    
+    # that bootstrap distribution is used to compute confidence limits as depicted 
+    # by the screeplot function:
+    plotFRBvars(MMpcares, cumul=0)
+    
+    # all plots for the FRB-PCA result:
+    plot(MMpcares)
 }
-\keyword{ multivariate }% __ONLY ONE__ keyword per line
+}
+\keyword{ multivariate }
 \keyword{ robust }

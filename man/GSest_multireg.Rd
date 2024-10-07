@@ -56,30 +56,29 @@ The returned object inherits from class \code{mlm} such that the standard \code{
 }
 \references{
 \itemize{ 
-\item H.P. Lopuhaa (1992) Highly efficient estimators of multivariate location with high breakdown point. \emph{The Annals of Statistics}, \bold{20}, 
-398-413. 
-\item E. Roelant, S. Van Aelst and  C. Croux (2009) Multivariate Generalized S-estimators. \emph{Journal of Multivariate Analysis}, \bold{100}, 876--887.
-\item M. Salibian-Barrera and V. Yohai (2006) A fast algorithm for S-regression estimates. 
-\emph{Journal of Computational and Graphical Statistics}, \bold{15}, 414-427. 
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
+    \item H.P. Lopuhaa (1992) Highly efficient estimators of multivariate location with high breakdown point. 
+    \emph{The Annals of Statistics}, \bold{20}, 398-413. 
+    
+    \item E. Roelant, S. Van Aelst and  C. Croux (2009) Multivariate Generalized S-estimators. 
+    \emph{Journal of Multivariate Analysis}, \bold{100}, 876--887.
+    
+    \item M. Salibian-Barrera and V. Yohai (2006) A fast algorithm for S-regression estimates. 
+    \emph{Journal of Computational and Graphical Statistics}, \bold{15}, 414-427. 
+    
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
 \author{ Ella Roelant, Gert Willems and Stefan Van Aelst}
-%\note{ ~~further notes~~ 
-
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
-\seealso{ \code{\link{diagplot.FRBmultireg}}, \code{\link{FRBmultiregGS}}, \code{\link{GSboot_multireg}},  \code{\link{Sest_multireg}}, \code{\link{GScontrol}} }
+\seealso{\code{\link{FRBmultiregGS}}, \code{\link{GSboot_multireg}},  \code{\link{Sest_multireg}}, \code{\link{GScontrol}} }
 \examples{
-data(schooldata)
-school.x <- data.matrix(schooldata[,1:5])
-school.y <- data.matrix(schooldata[,6:8])
-GSest <- GSest_multireg(school.x,school.y,nsamp=50)
-# or using the formula interface
-\dontrun{GSests <- GSest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)}
+\donttest{
+    data(schooldata)
+    school.x <- data.matrix(schooldata[,1:5])
+    school.y <- data.matrix(schooldata[,6:8])
+    GSest <- GSest_multireg(school.x,school.y,nsamp=50)
+    
+    ## or using the formula interface
+    GSests <- GSest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-%\keyword{ ~kwd1 }
-%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+}

@@ -1,10 +1,14 @@
 plot.FRBhot <- function(x,...) {
 
-      par(mfrow=c(2,1))
-      breakshere <- seq(0,max(x$teststat.boot)+2.5,2.5)
-      maint <- paste("Bootstrap null distribution (Tsq = ", round(x$statistic,2), ")", sep="")
-      hist(x$teststat.boot, breaks=breakshere, xlim=c(0,min(100,max(breakshere,x$statistic+1))), xlab="bootstrap statistics Tsq*", main=maint)
-      abline(v=x$statistic, col="red", lwd=2)
+    ## VT::05.10.2024: always restore pars()
+    oldpar <- par(no.readonly=TRUE)
+    on.exit(par(oldpar), add=TRUE)
+
+    par(mfrow=c(2,1))
+    breakshere <- seq(0,max(x$teststat.boot)+2.5,2.5)
+    maint <- paste("Bootstrap null distribution (Tsq = ", round(x$statistic,2), ")", sep="")
+    hist(x$teststat.boot, breaks=breakshere, xlim=c(0,min(100,max(breakshere,x$statistic+1))), xlab="bootstrap statistics Tsq*", main=maint)
+    abline(v=x$statistic, col="red", lwd=2)
 
       nvars <- ncol(x$CI)
       scaling <- x$CI[2,] - x$CI[1,]
@@ -34,5 +38,7 @@ plot.FRBhot <- function(x,...) {
           lines(c(i+0.2, i+0.2), c(scaledCI[2,i], scaledCI[2,i]-0.1), lwd=2)
   }
   par(mfrow=(c(1,1)))
+  
+  invisible(x)
 }
 

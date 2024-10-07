@@ -14,6 +14,10 @@ if (!is.null(dimnames(FRBres$est$Mu)[[2]]))
 else
     dimnames(FRBres$eigvec) <- list(paste("V",1:q,sep=""), paste("PC",1:q,sep=""))
     
+## VT::05.10.2024: always restore pars()
+oldpar <- par(no.readonly=TRUE)
+on.exit(par(oldpar), add=TRUE)
+
 par(mfrow=c(1,1))
 
 for (comp in pcs) {

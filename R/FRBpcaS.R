@@ -173,7 +173,7 @@ for (r in 1:R) {
     detSigma <- det(correctedSSigmast)
     if (detSigma<0) {
         bootsampleOK[r] <- 0
-        correctedSSigmast <- make.positive.definite(correctedSSigmast)
+        correctedSSigmast <- corpcor::make.positive.definite(correctedSSigmast)
         detSigma <- prod(eigen(correctedSSigmast)$values) # to be safe
         if (is.complex(detSigma) | Re(detSigma)<=0) {bootsampleOKreally[r] <- 0; next}
     }
@@ -211,7 +211,7 @@ nfailed <- R - length(bootindicesOK)
 # ... except if there were too many of those...
 if (nfailed > 0.75*R) {
     warning("more than 75% of bootstrapped shape matrices was non-positive definite; 
-    they were used anyway in case make.positive.definite was succesful")
+    they were used anyway in case corpcor::make.positive.definite was succesful")
     bootindicesOK <- (1:R)[bootsampleOKreally==1]
     nfailed <- R - length(bootindicesOK)
 }

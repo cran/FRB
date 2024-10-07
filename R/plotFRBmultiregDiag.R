@@ -1,5 +1,5 @@
 
-diagplot <- function(x,...) UseMethod("diagplot")
+diagplot <- function(x, ...) UseMethod("diagplot")
 
 diagplot.FRBmultireg <- function(x, Xdist = TRUE, ...) {
 
@@ -63,5 +63,6 @@ else {
   }
 }
 
+    invisible(x)
 }
 

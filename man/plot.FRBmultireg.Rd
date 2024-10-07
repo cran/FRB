@@ -54,22 +54,19 @@ With \eqn{p} and \eqn{q} the number of explanatory resp. response variables spec
   
 
 }
-%\value{
-%  Produces one or more arrays of histograms.
-%}
+\value{
+  Returns invisibly the first argument.
+}
 \references{ 
 \itemize{
-\item  S. Van Aelst and G. Willems (2005). Multivariate regression S-estimators for robust estimation and    
-inference. \emph{Statistica Sinica}, \bold{15}, 981-1001.
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
+    \item  S. Van Aelst and G. Willems (2005). Multivariate regression S-estimators for robust estimation and inference. 
+    \emph{Statistica Sinica}, \bold{15}, 981-1001.
+
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
 \author{ Gert Willems and Ella Roelant }
-%\note{ ~~further notes~~ 
-%
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
 \seealso{ \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}}, \code{\link{FRBmultiregGS}}, \code{\link{summary.FRBmultireg}}  }
 \examples{
 data(schooldata)
@@ -78,18 +75,21 @@ school.y <- data.matrix(schooldata[,6:8])
 
 Sres <- FRBmultiregS(school.x, school.y, R=999, bdp = 0.25, conf = 0.99)
 
-plot(Sres)
+\donttest{
+    plot(Sres)
 
-#the plot command above selected a subset, since otherwise an error may occur; 
-#as may happen when you explicitely ask for all coefficients to be plotted on one page:
-\dontrun{
-plot(Sres, expl=1:6, resp=1:3)}
+    ##  the plot command above selected a subset, since otherwise an error may occur; 
+    ##  as may happen when you explicitely ask for all coefficients to be plotted on one page:
 
-#use separate pages for each response in case of many covariates: 
-plot(Sres, onepage=FALSE)
+    plot(Sres, expl=1:6, resp=1:3)
 
-#perhaps specify some specific variables of interest:
-plot(Sres, expl=c("education", "occupation"), resp=c("selfesteem","reading"))
-#or (the same):
-plot(Sres, expl=2:3, resp=c(3,1))
+    ##  use separate pages for each response in case of many covariates: 
+    plot(Sres, onepage=FALSE)
+
+    ##  perhaps specify some specific variables of interest:
+    plot(Sres, expl=c("education", "occupation"), resp=c("selfesteem","reading"))
+
+    ##  or (the same):
+    plot(Sres, expl=2:3, resp=c(3,1))
+}
 }

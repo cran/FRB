@@ -17,4 +17,5 @@ plot.FRBpca <- function(x, which=1:3, pcs.loadings=1:min(5, length(x$eigval)), c
     }
     devAskNewPage(ask=currentAsk)
 
+    invisible(x)
 }

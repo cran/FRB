@@ -237,7 +237,9 @@ vecestim[(p+1):(2*p)] <- mu2
 vecestim[(2*p+1):dimens] <- vecop(Sigma)
 
 # draw bootstrap samples for each group separately:
-set.seed(2)
+
+##  VT::04.10.2024
+##  set.seed(2)
 bootmatrix1 <- matrix(sample(n1,R*n1,replace=TRUE),ncol=R)
 bootmatrix2 <- matrix(sample(n2,R*n2,replace=TRUE),ncol=R)
 

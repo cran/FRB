@@ -1,20 +1,14 @@
 citHeader("To cite FRB in publications use:")
 
-citEntry(entry = "Article",
-  title        = "Fast and Robust Bootstrap for Multivariate Inference: The {R} Package {FRB}",
-  author       = personList(person("Stefan", "Van Aelst"),
-                   as.person("Gert Willems")),
-  journal      = "Journal of Statistical Software",
-  year         = "2013",
-  volume       = "53",
-  number       = "3",
-  pages        = "1--32",
-  url          = "http://www.jstatsoft.org/v53/i03/",
-
-  textVersion  =
-  paste("Stefan Van Aelst, Gert Willems (2013).",
-        "Fast and Robust Bootstrap for Multivariate Inference: The R Package FRB.",
-        "Journal of Statistical Software, 53(3), 1-32.",
-        "URL http://www.jstatsoft.org/v53/i03/.")
+bibentry(bibtype = "Article",
+  title = "Fast and Robust Bootstrap for Multivariate Inference: The {R} Package {FRB}",
+  journal = "Journal of Statistical Software",
+  author = c(person(given = "Stefan", family = "Van Aelst"),
+             person(given = "Gert", family = "Willems")),
+  year = "2013",
+  volume = "53",
+  number = "3",
+  pages = "1--32",
+  url   = "https://www.jstatsoft.org/v53/i03/",
+  doi   = "10.18637/jss.v053.i03"
 )
-

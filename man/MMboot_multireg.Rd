@@ -67,34 +67,32 @@ Bootstrap samples which contain less than \eqn{p} distinct observations with pos
 }
 \references{
 \itemize{
-\item A.C. Davison, D.V. Hinkley (1997) Bootstrap methods and their application. Cambridge University Press.  
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
-\item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
-\item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
-inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
+    \item A.C. Davison, D.V. Hinkley (1997) Bootstrap methods and their application. Cambridge University Press.  
+    
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust bootstrap. 
+    \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
+    
+    \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of regression. 
+    \emph{The Annals of Statistics}, \bold{30}, 556--582.
+    
+    \item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and inference. 
+    \emph{Statistica Sinica}, \bold{15}, 981--1001.
+    
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
 \author{ Gert Willems, Ella Roelant and Stefan Van Aelst}
-%\note{ ~~further notes~~ 
-%
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
+
 \seealso{  \code{\link{FRBmultiregMM}}, \code{\link{MMest_multireg}}, \code{\link{Sboot_multireg}} }
 \examples{
-data(schooldata)
-school.x <- data.matrix(schooldata[,1:5])
-school.y <- data.matrix(schooldata[,6:8])
-
-#computes 1000 bootstrap recalculations starting from the MM-estimator
-#obtained from MMest_multireg()
-bootres <- MMboot_multireg(school.x,school.y,R=1000)
-
+\donttest{
+    data(schooldata)
+    school.x <- data.matrix(schooldata[,1:5])
+    school.y <- data.matrix(schooldata[,6:8])
+    
+    ## computes 1000 bootstrap recalculations starting from the MM-estimator
+    ## obtained from MMest_multireg()
+    bootres <- MMboot_multireg(school.x,school.y,R=1000)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-%\keyword{ ~kwd1 }
-%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+}

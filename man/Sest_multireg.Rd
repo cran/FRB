@@ -58,47 +58,51 @@ na.action=na.omit, ...)
 }
 \references{ 
 \itemize{
-\item M. Salibian-Barrera and V. Yohai (2006) A fast algorithm for S-regression estimates. 
-\emph{Journal of Computational and Graphical Statistics}, \bold{15}, 414--427. 
-\item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and
-inference. \emph{Statistica Sinica}, \bold{15}, 981--1001
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
+    \item M. Salibian-Barrera and V. Yohai (2006) A fast algorithm for S-regression estimates. 
+    \emph{Journal of Computational and Graphical Statistics}, \bold{15}, 414--427. 
+    
+    \item  S. Van Aelst and G. Willems (2005) Multivariate regression S-estimators for robust estimation and inference. 
+    \emph{Statistica Sinica}, \bold{15}, 981--1001
+
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
 \author{ Gert Willems, Stefan Van Aelst and Ella Roelant }
-%\note{ ~~further notes~~ 
-%
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
-\seealso{ \code{\link{FRBmultiregS}}, \code{\link{Sboot_multireg}},  \code{\link{MMest_multireg}}, \code{\link{Scontrol}} }
+\seealso{ 
+    \code{\link{FRBmultiregS}}, \code{\link{Sboot_multireg}},  \code{\link{MMest_multireg}}, \code{\link{Scontrol}} 
+}
+
 \examples{
 data(schooldata)
 school.x <- data.matrix(schooldata[,1:5])
 school.y <- data.matrix(schooldata[,6:8])
 
-# compute 25\% breakdown S-estimates
+## compute 25\% breakdown S-estimates
 Sres <- Sest_multireg(school.x,school.y, bdp=0.25)
-# or using the formula interface
-Sres <- Sest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata, bdp=0.25)
 
-# the regression coefficients:
-Sres$coefficients
-# or alternatively 
-coef(Sres)
-
-n <- nrow(schooldata)
-par(mfrow=c(2,1))
-# the estimates can be considered as weighted least squares estimates with the 
-# following implicit weights
-plot(1:n, Sres$weights)
-# Sres$outFlag tells which points are outliers based on whether or not their 
-# robust distance exceeds the .975 chi-square cut-off:
-plot(1:n, Sres$outFlag)
-# (see also the diagnostic plot in plotDiag())
-
+\donttest{
+    ## or using the formula interface
+    Sres <- Sest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata, bdp=0.25)
+    
+    ## the regression coefficients:
+    Sres$coefficients
+    
+    ## or alternatively 
+    coef(Sres)
+    
+    n <- nrow(schooldata)
+    oldpar <- par(mfrow=c(2,1))
+    ## the estimates can be considered as weighted least squares estimates with the 
+    ## following implicit weights
+    plot(1:n, Sres$weights)
+    
+    ## Sres$outFlag tells which points are outliers based on whether or not their 
+    ## robust distance exceeds the .975 chi-square cut-off:
+    plot(1:n, Sres$outFlag)
+    
+    ## (see also the diagnostic plot in plotDiag())
+    
+    par(oldpar)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-%\keyword{ ~kwd1 }
-%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+}

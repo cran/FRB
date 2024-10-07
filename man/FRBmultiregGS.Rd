@@ -90,22 +90,23 @@ The returned object inherits from class \code{mlm} such that the standard \code{
 }
 \references{ 
 \itemize{
-\item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. Cambridge Series in
-Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
-\item H.P. Lopuhaa (1992) Highly efficient estimators of multivariate location with high breakdown point. \emph{The Annals of Statistics}, \bold{20}, 
-398-413. 
-\item E. Roelant, S. Van Aelst and  C. Croux (2009) Multivariate Generalized S-estimators. \emph{Journal of Multivariate Analysis}, \bold{100}, 876--887.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-        }
-}
-\author{ Ella Roelant, Stefan Van Aelst and Gert Willems }
-%\note{ ~~further notes~~ 
+    \item A.C. Davison and D.V. Hinkley (1997) \emph{Bootstrap Methods and their Application}. 
+    Cambridge Series in Statistical and Probabilistic Mathematics. Cambridge: Cambridge University Press.
+    
+    \item H.P. Lopuhaa (1992) Highly efficient estimators of multivariate location with high breakdown point. 
+    \emph{The Annals of Statistics}, \bold{20}, 398-413. 
+    
+    \item E. Roelant, S. Van Aelst and  C. Croux (2009) Multivariate Generalized S-estimators. 
+    \emph{Journal of Multivariate Analysis}, \bold{100}, 876--887.
+    
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust bootstrap. 
+    \emph{Statistical Methods and Applications}, \bold{17}, 41-71. 
 
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
+\author{ Ella Roelant, Stefan Van Aelst and Gert Willems }
 \seealso{ \code{\link{summary.FRBmultireg}}, \code{\link{plot.FRBmultireg}}, \code{\link{GSboot_multireg}}, \code{\link{GSest_multireg}},  
 \code{\link{FRBmultiregMM}},  \code{\link{FRBmultiregS}}, \code{\link{GScontrol}} }
 \examples{
@@ -117,8 +118,10 @@ school.y <- data.matrix(schooldata[,6:8])
 #based on 99 bootstrap samples:
 GSres <- FRBmultiregGS(school.x, school.y, R=99, bdp = 0.25, conf = 0.8,nsamp=50)
 #or using the formula interface
-\dontrun{GSres <- FRBmultiregGS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
-          bdp = 0.25, conf = 0.8,R=99)}
+\donttest{
+GSres <- FRBmultiregGS(cbind(reading,mathematics,selfesteem)~., data=schooldata, 
+          bdp = 0.25, conf = 0.8,R=99)
+}
 
 #the print method just displays the coefficient estimates
 GSres
@@ -145,14 +148,7 @@ plot(GSres)
 #possibly the plot-function has made a selection of coefficients to plot here, 
 #since 'all' may have been too many to fit on one page, see help(plot.FRBmultireg); 
 #this is platform-dependent
-%# this may give an error if the number of coefficients to plot is too large to fit on one page; 
-%# use arguments expl and resp
-
-%# diagnostic plot for outlier detection:
-%plot(GSres, which=1)
-%# this may take a while, since the function needs to compute GS-estimates 
-%# for the X matrix
 }
 
-\keyword{ multivariate }% __ONLY ONE__ keyword per line
-\keyword{ robust }
+\keyword{multivariate}
+\keyword{robust}

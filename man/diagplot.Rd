@@ -3,7 +3,6 @@
 \alias{diagplot.FRBmultireg}
 \alias{diagplot.FRBpca}
 \alias{diagplot.FRBhot}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Plot Method for Objects of class 'FRBmultireg' }
 \description{
   Diagnostic plots for objects of class \code{FRBmultireg}, \code{FRBpca} and \code{FRBhot}. It shows robust distances
@@ -68,52 +67,55 @@ distance versus the index. In case of a two-sample test, the indices are within-
 the two groups. In the two-sample case, each group has its own location estimate \eqn{\hat{\mu}}{\mu} and a common
 covariance estimate \eqn{\hat{\Sigma}}{\Sigma}.
 }
-%\value{
-%  Produces one or more arrays of histograms.
-%}
+\value{
+  Returns invisibly the first argument.
+}
 \references{
 \itemize{
-\item G. Pison and S. Van Aelst (2004). Diagnostic Plots for Robust Multivariate Methods. \emph{Journal of Computational and Graphical Statistics}, \bold{13}, 310--329.
-%\item G. Pison and S. Van Aelst (2002). Analyzing robust multivariate methods
-%with a diagnostic plot.  In \emph{Proceedings in Computational Statistics 2002 (W.
-%Hardle and B. Ronz, eds.)}, 165-170.
-\item  S. Van Aelst and G. Willems (2005). Multivariate Regression S-Estimators for Robust Estimation and
-Inference. \emph{Statistica Sinica}, \bold{15}, 981--1001.
-\item S. Van Aelst and G. Willems (2013). Fast and Robust Bootstrap for Multivariate Inference: The R Package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-}
-}
+    \item G. Pison and S. Van Aelst (2004). Diagnostic Plots for Robust Multivariate Methods. 
+    \emph{Journal of Computational and Graphical Statistics}, \bold{13}, 310--329.
+    
+    %\item G. Pison and S. Van Aelst (2002). Analyzing robust multivariate methods with a diagnostic plot.  
+    %In \emph{Proceedings in Computational Statistics 2002 (W. Hardle and B. Ronz, eds.)}, 165-170.
+
+    \item S. Van Aelst and G. Willems (2005). Multivariate Regression S-Estimators for Robust Estimation and Inference. 
+    \emph{Statistica Sinica}, \bold{15}, 981--1001.
+    
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
+
 \author{ Gert Willems and Ella Roelant }
-%\note{ ~~further notes~~
-%
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
 \seealso{ \code{\link{FRBmultiregS}}, \code{\link{FRBmultiregMM}}, \code{\link{FRBmultiregGS}}, \code{\link{FRBpcaS}}
 , \code{\link{FRBpcaMM}}, \code{\link{FRBhotellingS}}, \code{\link{FRBhotellingMM}} }
 \examples{
 
-# for multivariate regression:
-data(schooldata)
-MMres <- MMest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)
-diagplot(MMres)
-# a large 'bad leverage' outlier should be noticeable (observation 59)
-
-# for PCA:
-\dontrun{
-data(ForgedBankNotes)
-MMres <- FRBpcaMM(ForgedBankNotes)
-diagplot(MMres)}
-
-# a group of 15 fairly strong outliers can be seen which apparently would have
-# a large general influence on a classical PCA analysis
-
-# for Hotelling tests (two-sample)
-\dontrun{
-data(hemophilia)
-MMres <- FRBhotellingMM(cbind(AHFactivity,AHFantigen)~gr,data=hemophilia)
-diagplot(MMres)}
-
-# the data seem practically outlier-free
-
+    ## for multivariate regression:
+    \donttest{
+        data(schooldata)
+        MMres <- MMest_multireg(cbind(reading,mathematics,selfesteem)~., data=schooldata)
+        diagplot(MMres)
+        ## a large 'bad leverage' outlier should be noticeable (observation 59)
+    }
+        
+    ## for PCA:
+    \donttest{
+        data(ForgedBankNotes)
+        MMres <- FRBpcaMM(ForgedBankNotes)
+        diagplot(MMres)
+    }
+    
+    ## a group of 15 fairly strong outliers can be seen which apparently would have
+    ## a large general influence on a classical PCA analysis
+    
+    ## for Hotelling tests (two-sample)
+    \donttest{
+        data(hemophilia, package="rrcov")
+        MMres <- FRBhotellingMM(cbind(AHFactivity, AHFantigen) ~ gr, data=hemophilia)
+        diagplot(MMres)
+    }
+    
+    ## the data seem practically outlier-free
 
 }

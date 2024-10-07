@@ -57,21 +57,22 @@ Bootstrap samples which contain too few distinct observations with positive weig
 }
 \references{
 \itemize{ 
-\item A.C. Davison, D.V. Hinkley (1997) Bootstrap methods and their application. Cambridge University Press.  
-\item E. Roelant, S. Van Aelst and  C. Croux (2009) Multivariate Generalized S-estimators. \emph{Journal of Multivariate Analysis}, \bold{100}, 876--887.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
-\item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.
-}
-}
-\author{ Ella Roelant, Stefan Van Aelst and  Gert Willems}
-%\note{ ~~further notes~~ 
+    \item A.C. Davison, D.V. Hinkley (1997) Bootstrap methods and their application. Cambridge University Press.  
+    
+    \item E. Roelant, S. Van Aelst and  C. Croux (2009) Multivariate Generalized S-estimators. 
+    \emph{Journal of Multivariate Analysis}, \bold{100}, 876--887.
+    
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust bootstrap. 
+    \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
+    
+    \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of regression. 
+    \emph{The Annals of Statistics}, \bold{30}, 556--582.
 
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
+\author{ Ella Roelant, Stefan Van Aelst and  Gert Willems}
 \seealso{  \code{\link{FRBmultiregGS}}, \code{\link{GSest_multireg}}}
 \examples{
 
@@ -79,13 +80,9 @@ data(schooldata)
 school.x1 <- data.matrix(schooldata[,1:2])
 school.y <- data.matrix(schooldata[,6:8])
 
-#computes 10 bootstrap recalculations starting from the GS-estimator
-#obtained from GSest_multireg
-\dontrun{
-bootres <- GSboot_multireg(school.x1,school.y,R=5)
+## computes 10 bootstrap recalculations starting from the GS-estimator
+## obtained from GSest_multireg
+\donttest{
+    bootres <- GSboot_multireg(school.x1,school.y,R=5)
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-%\keyword{ ~kwd1 }
-%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

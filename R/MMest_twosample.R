@@ -1,5 +1,3 @@
-MMest_twosample<-function(X, groups, control=MMcontrol(...), ...)
-{
 # M-step for two-sample location and common scatter with auxiliary S-scale
 # INPUT:
 # X = data matrix
@@ -20,38 +18,28 @@ MMest_twosample<-function(X, groups, control=MMcontrol(...), ...)
 # result$SSigma = S-estimate covariance matrix
 
 # --------------------------------------------------------------------
+MMest_twosample <- function(X, groups, control=MMcontrol(...), ...) {
 
-rhobiweight <- function(x,c)
-{
-# Computes Tukey's biweight rho function with constant c for all values in x
-
-hulp <- x^2/2 - x^4/(2*c^2) + x^6/(6*c^4)
-rho <- hulp*(abs(x)<c) + c^2/6*(abs(x)>=c)
-
-return(rho)
+## Computes Tukey's biweight rho function with constant c for all values in x
+rhobiweight <- function(x,c) {
+    hulp <- x^2/2 - x^4/(2*c^2) + x^6/(6*c^4)
+    rho <- hulp*(abs(x)<c) + c^2/6*(abs(x)>=c)    
+    return(rho)
 }
 
-# --------------------------------------------------------------------
-
-scaledpsibiweight <- function(x,c)
-{
-# Computes scaled Tukey's biweight psi function with constant c for all values in x
-
-hulp <- 1 - 2*x^2/(c^2) + x^4/(c^4)
-psi <- hulp*(abs(x)<c)
-
-return(psi)
+## Computes scaled Tukey's biweight psi function with constant c for all values in x
+scaledpsibiweight <- function(x, c) {
+    hulp <- 1 - 2*x^2/(c^2) + x^4/(c^4)
+    psi <- hulp*(abs(x)<c)
+    return(psi)
 }
 
-# --------------------------------------------------------------------
-# (taken from Claudia Becker's Sstart0 program)
+## (taken from Claudia Becker's Sstart0 program)
 
 "chi.int" <- function(p, a, c1)
 return(exp(lgamma((p + a)       
         #   partial expectation d in (0,c1) of d^a under chi-squared p
   /2) - lgamma(p/2)) * 2^{a/2} * pchisq(c1^2, p + a))
-
-# --------------------------------------------------------------------
 
 "sigma1.bw" <- function(p, c1)
 {  
@@ -80,8 +68,6 @@ beta1 <- (1-1/p)*beta1.1 + 1/p*beta1.2
 return( beta1^2 / alpha1 )
 
 }
-
-# --------------------------------------------------------------------
 
 csolve.bw.MM <- function(p, eff, shape = TRUE)
 {
@@ -190,6 +176,8 @@ psres <- sqrt(mahalanobis(rbind(R1,R2),rep(0,p),rescovariance))
 w <- scaledpsibiweight(psres,c)
 outFlag <- (psres > sqrt(qchisq(.975, p)))
 
-return(list(Mu1=resloc1,Mu2=resloc2,Gamma=resshape,Sigma=rescovariance,SMu1=Sresult$Mu1,SMu2=Sresult$Mu2,SGamma=Sresult$Gamma,scale=auxscale,SSigma=Sresult$Sigma,c0=c0,b=b,c1=c,w=w,outFlag=outFlag))
+    list(Mu1=resloc1, Mu2=resloc2, Gamma=resshape, Sigma=rescovariance, 
+        SMu1=Sresult$Mu1, SMu2=Sresult$Mu2, SGamma=Sresult$Gamma, scale=auxscale,
+        SSigma=Sresult$Sigma, c0=c0, b=b, c1=c, w=w, outFlag=outFlag)
 }
 

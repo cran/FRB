@@ -42,34 +42,29 @@ The estimates are centered by the original estimates, which are also returned th
 }
 \references{
 \itemize{ 
-\item E. Roelant, S. Van Aelst and G. Willems, (2008) Fast Bootstrap for Robust Hotelling Tests, COMPSTAT 2008: 
-Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verlag, 709--719.
-\item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust 
-bootstrap. \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
-\item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of 
-regression. \emph{The Annals of Statistics}, \bold{30}, 556--582.
-\item S. Van Aelst and G. Willems (2013). Fast and robust bootstrap for multivariate inference: The R package FRB. \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
-        URL: \url{http://www.jstatsoft.org/v53/i03/}.}
-}
-\author{ Ella Roelant, Gert Willems and Stefan Van Aelst}
-%\note{ ~~further notes~~ 
+    \item E. Roelant, S. Van Aelst and G. Willems, (2008) Fast Bootstrap for Robust Hotelling Tests, COMPSTAT 2008: 
+    Proceedings in Computational Statistics (P. Brito, Ed.) Heidelberg: Physika-Verlag, 709--719.
 
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
+    \item M. Salibian-Barrera, S. Van Aelst and G. Willems (2008) Fast and robust bootstrap. 
+    \emph{Statistical Methods and Applications}, \bold{17}, 41--71. 
+
+    \item M. Salibian-Barrera, R.H. Zamar (2002) Bootstrapping robust estimates of regression. 
+    \emph{The Annals of Statistics}, \bold{30}, 556--582.
+    
+    \item S. Van Aelst and G. Willems (2013), Fast and robust bootstrap for multivariate inference: The R package FRB. 
+    \emph{Journal of Statistical Software}, \bold{53}(3), 1--32.
+    \doi{10.18637/jss.v053.i03}.
+}}
+\author{ Ella Roelant, Gert Willems and Stefan Van Aelst}
 \seealso{ See Also \code{\link{FRBhotellingMM}}, \code{\link{Sboot_twosample}} }
  
 \examples{
-%##---- Should be DIRECTLY executable !! ----
-%##-- ==>  Define data, use random,
-%##--	or do  help(data=index)  for the standard data sets.
-Y1 <- matrix(rnorm(50*5), ncol=5)
-Y2 <- matrix(rnorm(50*5), ncol=5)
-Ybig <- rbind(Y1,Y2)
-grp <- c(rep(1,50),rep(2,50))
-MMests <- MMest_twosample(Ybig, grp)
-bootresult <- MMboot_twosample(Ybig, grp, R=500, ests=MMests)
+\donttest{
+    Y1 <- matrix(rnorm(50*5), ncol=5)
+    Y2 <- matrix(rnorm(50*5), ncol=5)
+    Ybig <- rbind(Y1,Y2)
+    grp <- c(rep(1,50),rep(2,50))
+    MMests <- MMest_twosample(Ybig, grp)
+    bootresult <- MMboot_twosample(Ybig, grp, R=500, ests=MMests)
+}
 }  
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-%\keyword{ ~kwd1 }
-%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

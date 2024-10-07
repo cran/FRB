@@ -23,9 +23,6 @@ school-related topics such as reading together, etc.}
 \item{\code{selfesteem}}{ Coopersmith Self-Esteem Inventory, intended as a measure of self-esteem}
 } 
 }
-%\details{
-%  ~~ If necessary, more details than the __description__ above ~~
-%}
 \source{
  Charnes et al. (1981)
 }

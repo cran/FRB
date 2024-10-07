@@ -10,6 +10,10 @@ bootangles <- FRBres$angles
 R <- ncol(bootangles)
 nplots <- length(pcs)
 
+## VT::05.10.2024: always restore pars()
+oldpar <- par(no.readonly=TRUE)
+on.exit(par(oldpar), add=TRUE)
+
 if (nplots<=1) rowcol <- c(1,1)
 else if (nplots==2) rowcol <- c(1,2)
 else if (nplots==3) rowcol <- c(1,3)
@@ -18,7 +22,7 @@ else rowcol <- c(ceiling(nplots/3),3)
 par(mfrow=rowcol)
 a <- try(hist(1:R), silent=TRUE)
 devAskNewPage(ask = FALSE)
-if (class(a)=="try-error") {
+if(inherits(a, "try-error")) {
    DoesNotFit <- TRUE
    giveWarning <- TRUE
 }
@@ -35,12 +39,15 @@ while (DoesNotFit & nplots>0) {
   else rowcol <- c(ceiling(nplots/3),3)
   par(mfrow=rowcol)
   a <- try(hist(1:R), silent=TRUE)
-  if (class(a)!="try-error") DoesNotFit <- FALSE
+  if(!inherits(a, "try-error")) DoesNotFit <- FALSE
 }
-if (nplots==0) stop("Something is wrong: plot margins too small?")
 
-if (giveWarning) warning("Number of plots too large to fit on the page, subset was selected: consider specifying (fewer) 
-    variables in 'pcs'; or enlarge graphics device")
+if(nplots==0) 
+    stop("Something is wrong: plot margins too small?")
+
+if(giveWarning) 
+    warning("Number of plots too large to fit on the page, subset was selected: consider specifying (fewer) 
+        variables in 'pcs'; or enlarge graphics device")
 
 histbreaks <- (0:20)/20*pi/2
 

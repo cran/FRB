@@ -1,11 +1,85 @@
-# Default NAMESPACE created by R
-# Remove the previous line if you edit this file
+## Export all names
+## exportPattern(".")
 
-# Export all names
-exportPattern(".")
+importFrom("grDevices", "devAskNewPage")
+importFrom("graphics", "abline", "axis", "grid", "hist", "lines",
+         "par", "points", "text", "title")
+importFrom("stats", ".getXlevels", "cov", "cov.wt", "dchisq",
+         "integrate", "mahalanobis", "median", "model.matrix",
+         "na.omit", "pchisq", "pnorm", "qchisq", "qnorm", "quantile",
+         "rnorm", "runif", "terms", "uniroot", "var")
+importFrom("utils", "combn")
 
-# Import all packages listed as Imports or Depends
-import(
-  corpcor,
-  rrcov
-)
+export(FRBhotellingMM,
+       FRBhotellingS,
+       FRBmultiregGS,
+       FRBmultiregMM,
+       FRBmultiregS,
+       FRBpcaMM,
+       FRBpcaS,
+       MMboot_loccov,
+       MMest_loccov,
+       MMboot_twosample,
+       MMest_twosample,
+       MMboot_multireg,
+       MMest_multireg,
+       GSboot_multireg,
+       GSest_multireg,
+       Sboot_loccov,
+       Sest_loccov,
+       Sboot_twosample,
+       Sest_twosample,
+       Sboot_multireg,
+       Sest_multireg,
+       
+       diagplot,
+       plotFRBvars,
+       plotFRBangles,
+       plotFRBloadings,
+       Scontrol,
+       MMcontrol,
+       GScontrol)
+       
+S3method(FRBhotellingMM, default)
+S3method(FRBhotellingMM, formula)
+S3method(FRBhotellingS, default)
+S3method(FRBhotellingS, formula)
+
+S3method(FRBmultiregGS, default)
+S3method(FRBmultiregGS, formula)
+S3method(FRBmultiregMM, default)
+S3method(FRBmultiregMM, formula)
+S3method(FRBmultiregS, default)
+S3method(FRBmultiregS, formula)
+
+S3method(FRBpcaMM, default)
+S3method(FRBpcaMM, formula)
+S3method(FRBpcaS, default)
+S3method(FRBpcaS, formula)
+
+S3method(GSest_multireg, default)
+S3method(GSest_multireg, formula)
+S3method(Sest_multireg, default)
+S3method(Sest_multireg, formula)
+S3method(MMest_multireg, default)
+S3method(MMest_multireg, formula)
+
+S3method(diagplot, FRBhot)
+S3method(diagplot, FRBmultireg)
+S3method(diagplot, FRBpca)
+S3method(plot, FRBhot)
+S3method(plot, FRBmultireg)
+S3method(plot, FRBpca)
+
+S3method(predict, FRBmultireg)
+S3method(print, FRBmultireg)
+S3method(print, FRBpca)
+S3method(print, summary.FRBhot)
+S3method(print, summary.FRBmultireg)
+S3method(print, summary.FRBpca)
+S3method(summary, FRBhot)
+S3method(summary, FRBmultireg)
+S3method(summary, FRBpca)
+
+S3method(vcov, FRBmultireg)
+
